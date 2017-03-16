@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
+import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
 
 @Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+selector: 'app-root',
+templateUrl: './app.component.html',
+styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'app works!';
+    constructor( private sanitizer: DomSanitizer ) {
+    }
 }

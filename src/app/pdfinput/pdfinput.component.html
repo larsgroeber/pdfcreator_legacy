@@ -1,0 +1,27 @@
+<div class="row">
+    <div class="col-md-6">
+        <form>
+            <div class="form-group">
+                <label for="input-name">Name: </label>
+                <input class="form-control" id="input-name" name="name" [(ngModel)]="name" placeholder="Name" (keyup)="onInputChange()">
+            </div>
+
+            <div class="form-group">
+                <label for="input-workshop">Workshop: </label>
+                <input class="form-control" id="input-workshop" name="workshop" [(ngModel)]="workshop" placeholder="Workshop" (keyup)="onInputChange()">
+            </div>
+
+            <div class="form-group">
+                <label for="input-betreuer">Betreuer: </label>
+                <input class="form-control" id="input-betreuer" name="betreuer" [(ngModel)]="betreuer" placeholder="Betreuer" (keyup)="onInputChange()">
+            </div>
+
+            <button class="btn btn-primary" (click)="downloadPDF()">Download</button>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <div class="embed-responsive embed-responsive-16by9" *ngIf="uri">
+            <iframe class="embed-responsive-item" scrolling="yes" [src]="getUri()"></iframe>
+        </div>
+    </div>
+</div>
