@@ -2,7 +2,8 @@ import {Component, OnInit, Output, EventEmitter} from '@angular/core';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {image_data} from "../dataurls";
 
-declare var jsPDF:any;
+declare var jsPDF: any;
+declare var CKEDITOR: any;
 
 @Component({
     selector: 'app-pdfinput',
@@ -19,9 +20,19 @@ export class PDFInputComponent implements OnInit {
     betreuer: string = "";
     uri: string;
     doc: any;
+    ckEditor: any;
 
     onInputChange(): void {
         this.genPDF();
+    }
+
+    onUpdatePDF(): void {
+        this.doc = new jsPDF;
+        this.doc.fromHTML('<div style="padding: 1cm 2cm 2cm;">' + this.ckEditor.getData(), 15, 15
+            , {
+            'width': 180
+            });
+        this.uri = this.doc.output('datauristring');
     }
 
     genPDF(): void {
@@ -67,6 +78,16 @@ export class PDFInputComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.genPDF();
+        //this.genPDF();
+        CKEDITOR.replace('editor1', {
+            // An array of stylesheets to style the WYSIWYG area.
+            // Note: it is recommended to keep your own styles in a separate file in order to make future updates painless.
+            contentsCss: [ 'https://cdn.ckeditor.com/4.6.1/full-all/contents.css', '../include/ckeditor.css' ],
+            // This is optional, but will let us define multiple different styles for multiple editors using the same CSS file.
+            bodyClass: 'document-editor',
+            height: 800,
+        });
+        this.ckEditor = CKEDITOR.instances['editor1'];
+        this.onUpdatePDF();
     }
 }
