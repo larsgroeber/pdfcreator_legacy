@@ -1,9 +1,17 @@
 import {Component, OnInit, Output, EventEmitter} from '@angular/core';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {image_data} from "../dataurls";
+import {Template} from "../../include/Template";
+import * as _ from 'lodash';
+
 
 declare var jsPDF: any;
 declare var CKEDITOR: any;
+
+interface Replacement {
+    name: string,
+    value: string
+}
 
 @Component({
     selector: 'app-pdfinput',
@@ -15,27 +23,49 @@ export class PDFInputComponent implements OnInit {
     constructor( private sanitizer: DomSanitizer ) {
     }
 
-    name: string = "";
-    workshop: string = "";
-    betreuer: string = "";
     uri: string;
+    safeUri: SafeUrl;
     doc: any;
     ckEditor: any;
+    keys: Replacement[];
+    debug: string;
 
-    onInputChange(): void {
-        this.genPDF();
+    onUpdateInput(): void {
+        let t = new Template( this.ckEditor.getData() );
+        t.setHtmlEscape();
+        let values: Object = {};
+        _.each(this.keys, (e: Replacement) => values[e.name] = e.value);
+        let text = t.replace(values);
+        this.genPDF(text);
     }
 
     onUpdatePDF(): void {
-        this.doc = new jsPDF;
-        this.doc.fromHTML('<div style="padding: 1cm 2cm 2cm;">' + this.ckEditor.getData(), 15, 15
-            , {
-            'width': 180
-            });
-        this.uri = this.doc.output('datauristring');
+        let text = this.ckEditor.getData();
+        let t = new Template( text );
+        t.setHtmlEscape();
+        this.keys = [];
+        _.each(t.getKeys(), (e: string) => {
+            this.keys.push({
+                name: e,
+                value: ''
+            })
+        });
+        this.genPDF(text);
     }
 
-    genPDF(): void {
+
+
+    genPDF(text: string): void {
+        this.doc = new jsPDF;
+        this.doc.fromHTML(text, 15, 15
+            , {
+                'width': 180
+            },
+            () => {
+                this.uri = this.doc.output('datauristring');
+                this.updateSafeUri( this.uri);
+        });
+        /*
         let dFSize: number = 14;
 
         let name = this.name ? this.name : "<NAME>";
@@ -67,14 +97,15 @@ export class PDFInputComponent implements OnInit {
         this.doc.text(betreuer, 40, 200 );
 
         this.uri = this.doc.output( 'datauristring' );
+        */
     }
 
     downloadPDF(): void {
         this.doc.save( "zertifikat.pdf" );
     }
 
-    getUri(): SafeUrl {
-        return this.sanitizer.bypassSecurityTrustResourceUrl( this.uri );
+    updateSafeUri(uri: string): void {
+        this.safeUri = this.sanitizer.bypassSecurityTrustResourceUrl( uri );
     }
 
     ngOnInit() {
@@ -86,8 +117,11 @@ export class PDFInputComponent implements OnInit {
             // This is optional, but will let us define multiple different styles for multiple editors using the same CSS file.
             bodyClass: 'document-editor',
             height: 800,
-        });
+        },
+        );
         this.ckEditor = CKEDITOR.instances['editor1'];
-        this.onUpdatePDF();
+        this.ckEditor.on('instanceReady', () => {
+            this.onUpdatePDF();
+        })
     }
 }
