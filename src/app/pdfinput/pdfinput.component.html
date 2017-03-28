@@ -13,12 +13,12 @@
         </form>
     </div>
     <div class="col-md-6">
-        <div class="embed-responsive embed-responsive-16by9" *ngIf="_uri">
+        <div class="embed-responsive embed-responsive-16by9" *ngIf="safeUri">
             <iframe class="embed-responsive-item" scrolling="yes" [src]="safeUri"></iframe>
         </div>
     </div>
 </div>
-
+<div class="alert alert-danger" *ngIf="error">{{error}}</div>
 <hr>
 
 <div class="" style="margin-top: 20px">

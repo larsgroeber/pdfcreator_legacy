@@ -2,6 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {Template} from '../../include/Template';
 import * as _ from 'lodash';
+import {LatexService} from "../latex.service";
 
 
 declare var jsPDF: any;
@@ -19,10 +20,11 @@ interface Replacement {
 })
 export class PDFInputComponent implements OnInit {
 
-  private _uri: string;
+  public _uri: string;
   private _doc: any;
   public safeUri: SafeUrl;
-  private keys: Replacement[];
+  public keys: Replacement[];
+  public error: string;
 
   /**
    * Untouched text from app-text-input.
@@ -31,7 +33,7 @@ export class PDFInputComponent implements OnInit {
 
   private debug: string;
 
-  constructor(private sanitizer: DomSanitizer) {
+  constructor(private sanitizer: DomSanitizer, private latex: LatexService) {
   }
 
   /**
@@ -39,7 +41,7 @@ export class PDFInputComponent implements OnInit {
    */
   onUpdateInput(): void {
     let t = new Template(this._text);
-    t.setHtmlEscape();
+    //t.setHtmlEscape();
     let values: Object = {};
     _.each(this.keys, (e: Replacement) => values[e.name] = e.value);
     let text = t.replace(values);
@@ -53,7 +55,7 @@ export class PDFInputComponent implements OnInit {
   onUpdatePDF(text: string): void {
     this._text = text;
     let t = new Template(text);
-    t.setHtmlEscape();
+    //t.setHtmlEscape();
     this.keys = [];
     _.each(t.getKeys(), (e: string) => {
       this.keys.push({
@@ -69,6 +71,13 @@ export class PDFInputComponent implements OnInit {
    * @param text
    */
   genPDF(text: string): void {
+    this.latex.convertLatex(text).subscribe((data) => {
+      this.updateSafeUri(data);
+      this.error = '';
+    }, (err) => {
+        this.error = err;
+    });
+    /*
     this._doc = new jsPDF;
     this._doc.fromHTML(text, 15, 15
       , {
@@ -78,7 +87,7 @@ export class PDFInputComponent implements OnInit {
         this._uri = this._doc.output('datauristring');
         this.updateSafeUri(this._uri);
       });
-    /*
+
      let dFSize: number = 14;
 
      let name = this.name ? this.name : "<NAME>";

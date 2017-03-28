@@ -1,8 +1,10 @@
 <div class="">
-    <button class="btn btn-primary" (click)="onTextChange()">Update PDF</button>
+    <button class="btn btn-primary" style="margin-bottom: 5px" (click)="onTextChange()">Update PDF</button>
 </div>
-<div>
-        <textarea name="editor1" id="editor1" rows="10" cols="80">
+<div class="form-group">
+  <label for="latex-text">Latex:</label>
+  <textarea class="form-control" id="latex-text" rows="20" cols="100" [(ngModel)]="text"></textarea>
+        <!--<textarea name="editor1" id="editor1" rows="10" cols="80">
             <h1 style="text-align:center"><span style="font-family:Georgia,serif"><span style="color:#006699">Recognition of Achievement</span></span></h1>
 <&Name&> <& Workshop &>
 <p style="text-align:justify">Lorem ipsum dolor sit amet,&nbsp;consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
@@ -45,5 +47,5 @@
 <p><span style="font-family:Georgia,serif">Best regards,</span></p>
 
 <p><span style="font-family:Georgia,serif"><em>The Management</em></span></p>
-        </textarea>
+        </textarea>-->
 </div>

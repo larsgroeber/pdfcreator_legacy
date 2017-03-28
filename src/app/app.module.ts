@@ -7,6 +7,7 @@ import {AppComponent} from './app.component';
 import {PDFInputComponent} from './pdfinput/pdfinput.component';
 import {UriService} from "./uri.service";
 import {TextEditorComponent} from "./texteditor/texteditor.component";
+import {LatexService} from "./latex.service";
 
 @NgModule({
     declarations: [
@@ -19,7 +20,7 @@ import {TextEditorComponent} from "./texteditor/texteditor.component";
         FormsModule,
         HttpModule
     ],
-    providers: [ UriService ],
+    providers: [ UriService, LatexService ],
     bootstrap: [AppComponent]
 })
 export class AppModule {
