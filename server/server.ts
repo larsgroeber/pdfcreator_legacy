@@ -3,16 +3,18 @@ import path = require('path');
 import bodyParser = require('body-parser');
 import router = require('./router');
 
+import * as Config from '../config';
+
 let app = express();
 
-app.use( router );
+app.use(Config.ROOT_URL, router);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(express.static(path.join(__dirname, '../dist/')));
+app.use(Config.ROOT_URL, express.static(path.join(__dirname, '../dist/')));
 
-const port = 3000;
+const port = Config.PORT || 3000;
 
 app.set('port', port);
 

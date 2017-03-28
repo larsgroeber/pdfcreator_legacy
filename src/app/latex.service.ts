@@ -2,16 +2,16 @@ import { Injectable } from '@angular/core';
 import {Http, Response} from "@angular/http";
 import {Observable, } from "rxjs";
 import 'rxjs/add/operator/map';
+import * as Config from "../../config";
 
 
 @Injectable()
 export class LatexService {
-
   constructor(private http: Http) {
   }
 
   convertLatex(latex: string): Observable<string> {
-    return this.http.post('/api/convert', {latex: latex})
+    return this.http.post(Config.ROOT_URL + 'api/convert', {latex: latex})
       .map(res => res.text())
       .catch(this.handleError);
   }
