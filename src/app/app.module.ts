@@ -6,11 +6,13 @@ import {HttpModule} from '@angular/http';
 import {AppComponent} from './app.component';
 import {PDFInputComponent} from './pdfinput/pdfinput.component';
 import {UriService} from "./uri.service";
+import {TextEditorComponent} from "./texteditor/texteditor.component";
 
 @NgModule({
     declarations: [
         AppComponent,
-        PDFInputComponent
+        PDFInputComponent,
+        TextEditorComponent
     ],
     imports: [
         BrowserModule,
