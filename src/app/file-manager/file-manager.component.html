@@ -1,0 +1,17 @@
+<div>
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let file of files"
+        [style.background-color]="(file === selectedFile) ? 'aqua' : ''" (click)="onFileClick(file)">{{file.name}}</li>
+    <button class="btn btn-default" (click)="showUploadFileDialog = true">Upload</button>
+    <button class="btn btn-default pull-right" (click)="showNewFileDialog = true">New</button>
+    <div *ngIf="showNewFileDialog">
+      <input class="form-control" [(ngModel)]="fileName" name="fileName">
+      <button class="btn btn-primary" (click)="onNewFileSave()">Save</button>
+    </div>
+    <div *ngIf="showUploadFileDialog">
+      <input type="file" ng2FileSelect [uploader]="uploader" />
+      <button class="btn btn-primary" (click)="onFileUpload()">Save</button>
+    </div>
+  </ul>
+  <div class="alert alert-info" *ngIf="info">{{info}}</div>
+</div>

@@ -1,7 +1,12 @@
 # Pdfcreator
 
 ## Installation
-You need node, npm and to compile LaTeX the texlive package installed. Then run:
+Dependencies:
+* node
+* npm
+* angular/cli
+* texlive
+
 ```
 cp config.example.ts config.ts  # and update config.ts to match your environment
 npm install

@@ -3,6 +3,7 @@ import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {Template} from '../../include/Template';
 import * as _ from 'lodash';
 import {LatexService} from "../latex.service";
+import {NotifyService} from "../notify.service";
 
 
 declare var jsPDF: any;
@@ -20,7 +21,6 @@ interface Replacement {
 })
 export class PDFInputComponent implements OnInit {
 
-  public _uri: string;
   private _doc: any;
   public safeUri: SafeUrl;
   public keys: Replacement[];
@@ -31,9 +31,10 @@ export class PDFInputComponent implements OnInit {
    */
   private _text: string;
 
-  private debug: string;
+  constructor(private sanitizer: DomSanitizer, private latex: LatexService, private notify: NotifyService) {
+    this.notify.saveFilesOb.subscribe(docName => {
 
-  constructor(private sanitizer: DomSanitizer, private latex: LatexService) {
+    })
   }
 
   /**
@@ -41,7 +42,6 @@ export class PDFInputComponent implements OnInit {
    */
   onUpdateInput(): void {
     let t = new Template(this._text);
-    //t.setHtmlEscape();
     let values: Object = {};
     _.each(this.keys, (e: Replacement) => values[e.name] = e.value);
     let text = t.replace(values);
@@ -55,7 +55,6 @@ export class PDFInputComponent implements OnInit {
   onUpdatePDF(text: string): void {
     this._text = text;
     let t = new Template(text);
-    //t.setHtmlEscape();
     this.keys = [];
     _.each(t.getKeys(), (e: string) => {
       this.keys.push({
@@ -77,49 +76,6 @@ export class PDFInputComponent implements OnInit {
     }, (err) => {
         this.error = err;
     });
-    /*
-    this._doc = new jsPDF;
-    this._doc.fromHTML(text, 15, 15
-      , {
-        'width': 180
-      },
-      () => {
-        this._uri = this._doc.output('datauristring');
-        this.updateSafeUri(this._uri);
-      });
-
-     let dFSize: number = 14;
-
-     let name = this.name ? this.name : "<NAME>";
-     let workshop = this.workshop ? this.workshop : "<WORKSHOP>";
-     let betreuer = this.betreuer ? this.betreuer : "<BETREUER>";
-
-     this.doc = new jsPDF;
-
-     this.doc.addImage( image_data.starkerStart, 'PNG', 10, 10, 80, 30 );
-
-     this.doc.setFillColor( 206, 125, 4 );
-     this.doc.rect( 0, 45, 30, 10, 'F' );
-
-     this.doc.setTextColor( 3, 79, 160 );
-     this.doc.setFontSize( 40 );
-     this.doc.text( 'Teilnahmezertifikat', 40, 55 );
-
-     this.doc.setFontSize( dFSize );
-     this.doc.setTextColor( 0, 0, 0 );
-     this.doc.text(name, 40, 70 );
-     this.doc.text("Hat erfolgreich am Workshop", 40, 80 );
-
-     this.doc.setFontSize( 25 );
-     this.doc.text(workshop, 40, 95 );
-
-     this.doc.setFontSize( dFSize );
-     this.doc.text("teilgenommen.", 40, 105 );
-
-     this.doc.text(betreuer, 40, 200 );
-
-     this.uri = this.doc.output( 'datauristring' );
-     */
   }
 
   downloadPDF(): void {
