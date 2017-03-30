@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { PDFInputComponent } from './pdfinput.component';
+import { PDFDisplayComponent } from './pdf-display.component';
 
 describe('PDFInputComponent', () => {
-  let component: PDFInputComponent;
-  let fixture: ComponentFixture<PDFInputComponent>;
+  let component: PDFDisplayComponent;
+  let fixture: ComponentFixture<PDFDisplayComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ PDFInputComponent ]
+      declarations: [ PDFDisplayComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(PDFInputComponent);
+    fixture = TestBed.createComponent(PDFDisplayComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

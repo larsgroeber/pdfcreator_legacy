@@ -1,3 +1,12 @@
+/**
+ * @file server.ts
+ *
+ * Simple configuration for an express server.
+ * For routes see router.ts
+ *
+ * @author Lars Gröber
+ */
+
 import express = require('express');
 import path = require('path');
 import bodyParser = require('body-parser');

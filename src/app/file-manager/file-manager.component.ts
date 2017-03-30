@@ -1,24 +1,22 @@
 /**
  * @file file-editor.component.ts
  *
- * Displays a file manager and is responsible for saving files.
+ * Displays a file manager and is responsible for saving and creating files.
+ * TODO: display warning if user closes window
+ * TODO: keep track of if files need to be saved
  *
  * @author Lars Gröber
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {LatexService} from "../latex.service";
-import {NotifyService} from "../notify.service";
+import {LatexService} from "../services/latex.service";
+import {NotifyService} from "../services/notify.service";
 import {FileUploader} from "ng2-file-upload";
 
 import * as Config from '../../../config';
+import {mFile} from "../mfile";
 
-const URL = 'http://localhost:3000' + Config.ROOT_URL + 'api/upload';
-
-interface mFile {
-  name: string,
-  text: string,
-}
+const URL = Config.SERVER_URL + Config.ROOT_URL + 'api/upload';
 
 @Component({
   selector: 'app-file-editor',
@@ -27,24 +25,23 @@ interface mFile {
 })
 
 export class FileManagerComponent implements OnInit {
-  // TODO: get this from the server
+  // files
   private files: mFile[];
-  private selectedFile: mFile;
+  private selectedFile: mFile = { name: '', text: ''};
+
+  // info box
   public info: string;
+  public infoClass: string;
+
+  // new files
   public fileName: string;
-  public uploader: FileUploader = new FileUploader({ url: URL })
+  public uploader: FileUploader = new FileUploader({ url: URL });
   public showNewFileDialog: boolean = false;
   public showUploadFileDialog: boolean = false;
 
   @Input() docName: string;
 
   constructor(private latex: LatexService, private notify: NotifyService) {
-    this.notify.textChangeOb.subscribe(text => {
-      this.selectedFile.text = text;
-    });
-    this.notify.saveFilesOb.subscribe(docName => {
-      this.fileSave();
-    });
   }
 
   /**
@@ -60,29 +57,67 @@ export class FileManagerComponent implements OnInit {
    * Is called whenever all files should be saved.
    */
   fileSave(): void {
-    this.showInfo('Files saved!');
+    if (!this.files) return;
+    console.log('Save files ' + this.docName);
     this.latex.updateDoc(this.docName, this.files).subscribe(files => {
+      this.showInfo('Files saved!');
       this.files = files;
-    });
+      if (this.selectedFile.name) {
+        this.selectedFile = this.files.find(f => f.name === this.selectedFile.name);
+      }
+    }, err => this.showInfo(err, 'error'));
   }
 
-  showInfo(text: string): void {
+  /**
+   * Deletes the selected file from files.
+   */
+  deleteFile(): void {
+    let index = this.files.indexOf(this.selectedFile);
+    if (index !== -1) {
+      this.files.splice(index, 1);
+    }
+  }
+
+  /**
+   * Helper function to display information in the info box.
+   * @param text
+   * @param logLevel
+   */
+  showInfo(text: string, logLevel?: string): void {
+    if (!logLevel) logLevel = 'log';
+    switch (logLevel) {
+      case 'log':
+        this.infoClass = 'alert-info';
+        break;
+      case 'error':
+        this.infoClass = 'alert-danger';
+    }
     this.info = text;
-    setTimeout(() => { this.info = '' }, 5000);
+    setTimeout(() => { this.info = '' }, 3000);
   }
 
+  /**
+   * Called when the user uploads a file.
+   */
   onFileUpload(): void {
     this.uploader.onBuildItemForm = (item, form) => {
       form.append('name', this.docName);
     };
     this.uploader.onCompleteItem = (item:any, response:any, status:any, headers:any) => {
       console.log("ImageUpload:uploaded:", item, status);
-      this.showInfo("File uploaded!");
+      if (status !== 200) {
+        this.showInfo("There was a problem uploading the file!", 'error');
+      } else {
+        this.showInfo("File uploaded!");
+      }
       this.reloadFiles();
     };
     this.uploader.uploadAll();
   }
 
+  /**
+   * Called when the user creates a new file.
+   */
   onNewFileSave(): void {
     this.files.push({
       name: this.fileName,
@@ -92,16 +127,33 @@ export class FileManagerComponent implements OnInit {
     this.showNewFileDialog = false;
   }
 
+  /**
+   * Fetches files from the server.
+   */
   reloadFiles(): void {
+    console.log('Reload files ' + this.docName);
     this.latex.getOneDoc(this.docName).subscribe((files) => {
       this.files = files;
       this.selectedFile = this.files.find(f => f.name === 'main.tex');
-      this.notify.onTextChange(this.selectedFile.text);
+      this.notify.onTextChange('');
     })
   }
 
   ngOnInit() {
+    // listen to notify events
+    this.notify.textChangeOb.subscribe(text => {
+      if (this.selectedFile) {
+        this.selectedFile.text = text;
+      }
+    });
+    this.notify.saveFilesOb.subscribe(docName => {
+      this.fileSave();
+    });
+    this.notify.loadDocOb.subscribe(docName => {
+      this.docName = docName;
+      this.reloadFiles();
+    });
+    // start by fetching files
     this.reloadFiles();
   }
-
 }

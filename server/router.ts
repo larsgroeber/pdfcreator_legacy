@@ -1,7 +1,17 @@
+/**
+ * @file router.ts
+ *
+ * Contains all routes for the CRUD and latex backend.
+ *
+ * @author Lars Gröber
+ */
+
 import express = require('express');
 import bodyParser = require('body-parser');
 import fs = require('fs-extra');
 import multer = require('multer');
+
+let mime = require('mime-types');
 
 import * as Config from '../config';
 
@@ -19,7 +29,7 @@ router.get('/api', (req, res) => {
   res.send('router works');
 });
 
-// convert a single latex page to pdf
+// Converts a single latex page to pdf
 router.post('/api/convert', (req, res) => {
   require('latex')(req.body.latex)
     .on('error', (err) => {
@@ -28,6 +38,26 @@ router.post('/api/convert', (req, res) => {
     })
     .pipe(require('dataurl').stream({mimetype: 'application/pdf'}))
     .pipe(res);
+});
+
+// Converts a complete latex document by taking the 'main.tex' file
+// and the name of the document as arguments in the body.
+// Returns the compiled PDF as a dataurl.
+router.post('/api/latex/convert', (req, res) => {
+  let name = req.body.name;
+  let latex = req.body.latex;
+  if (name && latex) {
+    require('node-latex')(latex, { inputs: Config.DATA_PATH + name + '/' })
+      .on('error', err => {
+        console.error(err);
+        res.status(500).send({error: err.toString()});
+      })
+      .pipe(require('dataurl').stream({mimetype: 'application/pdf'}))
+      .pipe(res);
+  } else {
+    console.log('Bad Request!');
+    res.sendStatus(400);
+  }
 });
 
 // Uploads a file and returns an empty response.
@@ -82,6 +112,15 @@ router.post('/api/latex/get/one', (req, res) => {
       let docFiles: File[] = [];
       for (let f of files) {
         try {
+          let m = mime.lookup(f);
+          if (m == 'image/png' || m == 'image/jpeg') {
+            docFiles.push({name: f, text: 'Picture, not implemented'});
+            continue;
+          }
+          if (m == 'application/pdf') {
+            docFiles.push({name: f, text: 'PDF, not implemented'});
+            continue;
+          }
           docFiles.push({name: f, text: fs.readFileSync(Config.DATA_PATH + name + '/' + f, 'utf8')});
         } catch (err) {
           console.error(err);
@@ -141,23 +180,32 @@ router.post('/api/latex/delete/one', (req, res) => {
 
 // Update a document, returns all updated file objects.
 // Expects a 'name' property and a 'files' property with an array of all file objects in body.
-// TODO: deltes the complete directory for some reason
 router.post('/api/latex/update/one', (req, res) => {
   let name: string = req.body.name;
-  let files: File[] = req.body.files;
-  if (name && files) {
-    fs.remove(Config.DATA_PATH + name, (err) => {
+  let newFiles: File[] = req.body.files;
+  if (name && newFiles) {
+    fs.readdir(Config.DATA_PATH + name, (err, oldFiles) => {
       if (!handleErr(err, res)) return;
-      fs.mkdir(Config.DATA_PATH + name, (err) => {
-        if (!handleErr(err, res)) return;
-        for (let f of files) {
-          fs.writeFile(Config.DATA_PATH + name + '/' + f.name, f.text, (err) => {
-            if (!handleErr(err, res)) return;
-          });
+      try {
+        for (let of of oldFiles) {
+          if (!newFiles.find(f => f.name === of)) {
+            fs.unlinkSync(Config.DATA_PATH + name + '/' + of);
+            console.log('unlinked ' + of);
+          }
         }
-        res.send({files: files});
-      });
-    });
+        for (let nf of newFiles) {
+          let m = mime.lookup(nf.name);
+          if (m == 'image/png' || m == 'image/jpeg') {
+            continue;
+          }
+          fs.writeFileSync(Config.DATA_PATH + name + '/' + nf.name, nf.text);
+        }
+      } catch (err) {
+        console.error(err);
+        res.status(500).send(err);
+      }
+      res.send({files: newFiles});
+    })
   } else {
     console.log('Bad Request.');
     res.sendStatus(400);
@@ -170,6 +218,7 @@ function handleErr(err, res): boolean {
     res.status(500).send(err);
     return false;
   }
+  return true;
 }
 
 function removeDir(path: string, res, callback?): boolean {
@@ -179,5 +228,5 @@ function removeDir(path: string, res, callback?): boolean {
     }
     callback();
   });
-  return false;
+  return true;
 }

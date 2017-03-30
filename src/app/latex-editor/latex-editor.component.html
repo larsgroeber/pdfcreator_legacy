@@ -1,15 +1,27 @@
 <div>
-  <button class="btn btn-primary" style="margin-bottom: 5px" (click)="onSavePDF()">Update PDF</button><br>
+  <div class="alert alert-danger" *ngIf="error">{{error}}</div>
   <div class="form-group">
-    <label for="name">Name des Templates:</label>
-    <input id="name" class="form-control" type="text" name="docName" [(ngModel)]="docName">
+    <label for="docName">Template:</label>
+    <select name="docName" [(ngModel)]="docName" id="docName" class="form-control">
+      <option *ngFor="let doc of documents" value="{{doc}}">{{doc}}</option>
+    </select>
+    <!--<input id="name" class="form-control" type="text" name="docName" [(ngModel)]="docName">-->
   </div>
-  <button class="btn btn-primary" (click)="onLoadDoc()">Load</button>
-  <button class="btn btn-primary" (click)="onDeleteDoc()">Delete</button>
-  <button class="btn btn-primary" (click)="onCreateDoc()">Create</button>
-  <button class="btn btn-primary" (click)="onSavePDF()">Save</button>
+  <div id="template-buttons">
+    <button class="btn btn-raised btn-primary" (click)="onLoadDoc()">Load</button>
+    <button class="btn btn-raised btn-primary" (click)="onDeleteDoc()">Delete</button>
+    <button class="btn btn-raised btn-primary" (click)="showNewDocDialog = !showNewDocDialog">Create New</button>
+    <button class="btn btn-raised btn-primary pull-right" *ngIf="currentDocName"
+            (click)="onCompilePDF()">Compile PDF</button><br>
+  </div>
+
+  <div class="form-group" id="new-doc-dialog" *ngIf="showNewDocDialog">
+    <label for="newName">Name des Templates</label>
+    <input id="newName" type="text" class="form-control" [(ngModel)]="docName">
+    <button class="btn btn-raised btn-success" style="margin-top: 5px" (click)="onCreateDoc()">Create</button>
+  </div>
 </div>
 <div class="row" style="margin-top: 20px" *ngIf="currentDocName">
-  <app-file-editor class="col-md-2" [docName]="currentDocName"></app-file-editor>
-  <app-text-editor class="col-md-10" ngDefaultControl></app-text-editor>
+  <app-file-editor class="col-md-3" [docName]="currentDocName"></app-file-editor>
+  <app-text-editor class="col-md-9" ngDefaultControl></app-text-editor>
 </div>

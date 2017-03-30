@@ -1,17 +1,25 @@
 <div>
+  <div id="file-manager-main-btns">
+    <button class="btn btn-primary" (click)="fileSave()">Save</button>
+    <button class="btn btn-raised btn-primary" *ngIf="selectedFile.name" (click)="deleteFile()">Delete File</button>
+  </div>
   <ul class="list-group">
     <li class="list-group-item" *ngFor="let file of files"
-        [style.background-color]="(file === selectedFile) ? 'aqua' : ''" (click)="onFileClick(file)">{{file.name}}</li>
-    <button class="btn btn-default" (click)="showUploadFileDialog = true">Upload</button>
-    <button class="btn btn-default pull-right" (click)="showNewFileDialog = true">New</button>
-    <div *ngIf="showNewFileDialog">
-      <input class="form-control" [(ngModel)]="fileName" name="fileName">
-      <button class="btn btn-primary" (click)="onNewFileSave()">Save</button>
-    </div>
-    <div *ngIf="showUploadFileDialog">
-      <input type="file" ng2FileSelect [uploader]="uploader" />
-      <button class="btn btn-primary" (click)="onFileUpload()">Save</button>
-    </div>
+        [style.background-color]="(file === selectedFile) ? '#FFCA28' : ''" (click)="onFileClick(file)">{{file.name}}</li>
   </ul>
-  <div class="alert alert-info" *ngIf="info">{{info}}</div>
+  <div id="file-manager-file-btns">
+    <button class="btn btn-default"
+            (click)="showUploadFileDialog = !showUploadFileDialog; showNewFileDialog = false">Upload</button>
+    <button class="btn btn-default pull-right"
+            (click)="showNewFileDialog = !showNewFileDialog; showUploadFileDialog = false">New</button>
+  </div>
+  <div *ngIf="showNewFileDialog" class="file-manager-dialog">
+    <input class="form-control" [(ngModel)]="fileName" name="fileName">
+    <button class="btn btn-primary file-manager-save-btn" (click)="onNewFileSave()">Save</button>
+  </div>
+  <div *ngIf="showUploadFileDialog" class="file-manager-dialog">
+    <input type="file" ng2FileSelect [uploader]="uploader" />
+    <button class="btn btn-primary file-manager-save-btn" (click)="onFileUpload()">Save</button>
+  </div>
+  <div class="alert {{infoClass}}" id="file-manager-info-box" *ngIf="info">{{info}}</div>
 </div>

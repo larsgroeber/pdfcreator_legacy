@@ -8,9 +8,9 @@
 
 import { Injectable } from '@angular/core';
 import {Http, Response} from "@angular/http";
-import {Observable, Subject,} from "rxjs";
+import {Observable} from "rxjs";
 import 'rxjs/add/operator/map';
-import * as Config from "../../config";
+import * as Config from "../../../config";
 
 interface mFile {
   name: string,
@@ -24,46 +24,46 @@ export class LatexService {
 
   ////// Methods for document CRUD system //////
 
-  getAllDocs(): Observable<string> {
+  getAllDocs(): Observable<string[]> {
     return this.http.get(Config.ROOT_URL + 'api/latex/get/all', {} )
-      .map(res => res.text())
-      .catch(this.handleError);
+      .map(res => res.json().documents)
+      .catch(LatexService.handleError);
   }
 
   getOneDoc(docName: string): Observable<mFile[]> {
     return this.http.post(Config.ROOT_URL + 'api/latex/get/one', { name: docName } )
       .map(res => res.json().files)
-      .catch(this.handleError);
+      .catch(LatexService.handleError);
   }
 
   createNewDoc(docName: string): Observable<string> {
     return this.http.post(Config.ROOT_URL + 'api/latex/create/one', { name: docName } )
       .map(res => res.text())
-      .catch(this.handleError);
+      .catch(LatexService.handleError);
   }
 
   updateDoc(docName: string, files: mFile[]): Observable<mFile[]> {
     return this.http.post(Config.ROOT_URL + 'api/latex/update/one', { name: docName, files: files } )
       .map(res => res.json().files)
-      .catch(this.handleError);
+      .catch(LatexService.handleError);
   }
 
   deleteDoc(docName: string): Observable<string> {
     return this.http.post(Config.ROOT_URL + 'api/latex/delete/one', { name: docName } )
       .map(res => res.text())
-      .catch(this.handleError);
+      .catch(LatexService.handleError);
   }
 
   ////// End CRUD system //////
 
-  convertLatex(latex: string): Observable<string> {
-    return this.http.post(Config.ROOT_URL + 'api/convert', {latex: latex})
+  convertLatex(docName: string, latex: string): Observable<string> {
+    return this.http.post(Config.ROOT_URL + 'api/latex/convert', { name: docName, latex: latex })
       .map(res => res.text())
-      .catch(this.handleError);
+      .catch(LatexService.handleError);
   }
 
-  private handleError(error: Response | any) {
-    // In a real world app, you might use a remote logging infrastructure
+  // see angular 2 guides
+  public static handleError(error: Response | any) {
     let errMsg: string;
     if (error instanceof Response) {
       const body = error.json() || '';
