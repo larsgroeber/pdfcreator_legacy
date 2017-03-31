@@ -62,7 +62,7 @@ export class FileManagerComponent implements OnInit {
     this.latex.updateDoc(this.docName, this.files).subscribe(files => {
       this.showInfo('Files saved!');
       this.files = files;
-      if (this.selectedFile.name) {
+      if (this.selectedFile) {
         this.selectedFile = this.files.find(f => f.name === this.selectedFile.name);
       }
     }, err => this.showInfo(err, 'error'));
@@ -135,7 +135,9 @@ export class FileManagerComponent implements OnInit {
     this.latex.getOneDoc(this.docName).subscribe((files) => {
       this.files = files;
       this.selectedFile = this.files.find(f => f.name === 'main.tex');
-      this.notify.onTextChange('');
+      if (this.selectedFile) {
+        this.notify.onTextChange(this.selectedFile.text);
+      }
     })
   }
 

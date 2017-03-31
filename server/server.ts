@@ -16,12 +16,12 @@ import * as Config from '../config';
 
 let app = express();
 
-app.use(Config.ROOT_URL, router);
+app.use(Config.ROOT_URL_EXPRESS, router);
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use(Config.ROOT_URL, express.static(path.join(__dirname, '../dist/')));
+app.use(Config.ROOT_URL_EXPRESS, express.static(path.join(__dirname, '../dist/')));
 
 const port = Config.PORT || 3000;
 
