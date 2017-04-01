@@ -1,7 +1,7 @@
 <div>
   <div id="file-manager-main-btns">
-    <button class="btn btn-primary" (click)="fileSave()">Save</button>
-    <button class="btn btn-raised btn-primary" *ngIf="selectedFile.name" (click)="deleteFile()">Delete File</button>
+    <button class="btn btn-primary" (click)="saveFiles()">Save</button>
+    <button class="btn btn-raised btn-primary" *ngIf="selectedFile && selectedFile.name" (click)="deleteFile()">Delete File</button>
   </div>
   <ul class="list-group">
     <li class="list-group-item" *ngFor="let file of files"

@@ -17,7 +17,7 @@ import {NotifyService} from "../services/notify.service";
 })
 
 export class LatexEditorComponent implements OnInit {
-  docName: string;
+  selectedDocName: string;
   currentDocName: string;
   public documents: string[];
   public showNewDocDialog: boolean = false;
@@ -36,23 +36,20 @@ export class LatexEditorComponent implements OnInit {
   }
 
   onSavePDF(): void {
-    this.notify.onSaveFiles(this.docName);
+    this.notify.onSaveFiles(this.selectedDocName);
   }
 
   onLoadDoc(): void {
-    if (this.currentDocName) {
-      this.onSavePDF();
-    }
-    this.currentDocName = this.docName;
-    this.notify.onloadDoc(this.docName);
+    this.currentDocName = this.selectedDocName;
+    this.notify.onloadDoc(this.currentDocName);
   }
 
   /**
    * Deletes a document.
    */
   onDeleteDoc(): void {
-    this.latex.deleteDoc(this.docName).subscribe(() => {}, err => this.showError(err));
-    this.docName = '';
+    this.latex.deleteDoc(this.selectedDocName).subscribe(() => {}, err => this.showError(err));
+    this.selectedDocName = '';
     this.currentDocName = '';
     this.updateDocList();
   }
@@ -62,7 +59,7 @@ export class LatexEditorComponent implements OnInit {
    */
   onCreateDoc(): void {
     this.showNewDocDialog = false;
-    this.latex.createNewDoc(this.docName).subscribe(() => {
+    this.latex.createNewDoc(this.selectedDocName).subscribe(() => {
       this.onLoadDoc();
       this.updateDocList();
     }, err => this.showError(err));

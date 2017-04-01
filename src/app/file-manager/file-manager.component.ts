@@ -16,7 +16,7 @@ import {FileUploader} from "ng2-file-upload";
 import * as Config from '../../../config';
 import {mFile} from "../mfile";
 
-const URL = Config.SERVER_URL + Config.ROOT_URL + 'api/upload';
+const URL = Config.SERVER_URL + Config.ROOT_URL_EXPRESS + 'api/upload';
 
 @Component({
   selector: 'app-file-editor',
@@ -56,7 +56,7 @@ export class FileManagerComponent implements OnInit {
   /**
    * Is called whenever all files should be saved.
    */
-  fileSave(): void {
+  saveFiles(): void {
     if (!this.files) return;
     console.log('Save files ' + this.docName);
     this.latex.updateDoc(this.docName, this.files).subscribe(files => {
@@ -75,6 +75,7 @@ export class FileManagerComponent implements OnInit {
     let index = this.files.indexOf(this.selectedFile);
     if (index !== -1) {
       this.files.splice(index, 1);
+      this.notify.onTextChange('');
     }
   }
 
@@ -111,6 +112,7 @@ export class FileManagerComponent implements OnInit {
         this.showInfo("File uploaded!");
       }
       this.reloadFiles();
+      this.showUploadFileDialog = false;
     };
     this.uploader.uploadAll();
   }
@@ -149,13 +151,12 @@ export class FileManagerComponent implements OnInit {
       }
     });
     this.notify.saveFilesOb.subscribe(docName => {
-      this.fileSave();
+      this.saveFiles();
     });
-    this.notify.loadDocOb.subscribe(docName => {
-      this.docName = docName;
+    this.notify.loadDocOb.subscribe(newDocName => {
+      this.saveFiles();
+      this.docName = newDocName;
       this.reloadFiles();
     });
-    // start by fetching files
-    this.reloadFiles();
   }
 }
