@@ -9,14 +9,14 @@
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {LatexService} from "../services/latex.service";
-import {NotifyService} from "../services/notify.service";
-import {FileUploader} from "ng2-file-upload";
+import {LatexService} from '../services/latex.service';
+import {NotifyService} from '../services/notify.service';
+import {FileUploader} from 'ng2-file-upload';
 
 import * as Config from '../../../config';
-import {mFile} from "../mfile";
+import {mFile} from '../mfile';
 
-const URL = Config.SERVER_URL + Config.ROOT_URL_EXPRESS + 'api/upload';
+const URL = Config.SERVER_URL + Config.ROOT_URL + 'api/upload';
 
 @Component({
   selector: 'app-file-editor',
@@ -36,8 +36,8 @@ export class FileManagerComponent implements OnInit {
   // new files
   public fileName: string;
   public uploader: FileUploader = new FileUploader({ url: URL });
-  public showNewFileDialog: boolean = false;
-  public showUploadFileDialog: boolean = false;
+  public showNewFileDialog = false;
+  public showUploadFileDialog = false;
 
   @Input() docName: string;
 
@@ -68,7 +68,7 @@ export class FileManagerComponent implements OnInit {
    * Deletes the selected file from files.
    */
   deleteFile(): void {
-    let index = this.files.indexOf(this.selectedFile);
+    const index = this.files.indexOf(this.selectedFile);
     if (index !== -1) {
       this.files.splice(index, 1);
       this.notify.onTextChange('');
@@ -90,7 +90,7 @@ export class FileManagerComponent implements OnInit {
         this.infoClass = 'alert-danger';
     }
     this.info = text;
-    setTimeout(() => { this.info = '' }, 3000);
+    setTimeout(() => { this.info = ''; }, 3000);
   }
 
   /**
@@ -100,12 +100,12 @@ export class FileManagerComponent implements OnInit {
     this.uploader.onBuildItemForm = (item, form) => {
       form.append('name', this.docName);
     };
-    this.uploader.onCompleteItem = (item:any, response:any, status:any, headers:any) => {
-      console.log("ImageUpload:uploaded:", item, status);
+    this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
+      console.log('ImageUpload:uploaded:', item, status);
       if (status !== 200) {
-        this.showInfo("There was a problem uploading the file!", 'error');
+        this.showInfo('There was a problem uploading the file!', 'error');
       } else {
-        this.showInfo("File uploaded!");
+        this.showInfo('File uploaded!');
       }
       this.reloadFiles();
       this.showUploadFileDialog = false;
@@ -136,7 +136,7 @@ export class FileManagerComponent implements OnInit {
       if (this.selectedFile) {
         this.notify.onTextChange(this.selectedFile.text);
       }
-    })
+    });
   }
 
   ngOnInit() {
