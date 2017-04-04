@@ -1,0 +1,53 @@
+#side-nav-header {
+  width: 300px;
+  height: 123px;
+  background: url('../../assets/Starker_Start_Logo.png') no-repeat;
+  background-size: 290px 123px;
+}
+
+#slide-out {
+  background-color: #fff;
+  height: 100%;
+}
+
+nav {
+  background-color: #005DA7;
+}
+
+nav a {
+  color: white;
+  text-decoration: none !important;
+}
+
+.nav-wrapper {
+  padding-left: 10px;
+}
+
+.nav-wrapper > a {
+}
+
+#main-content {
+  padding: 10px;
+}
+
+.list-item-bottom {
+  vertical-align: bottom;
+}
+
+#side-nav-footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  height: 50px;
+  border-top: solid 1px #e0e0e0;
+}
+
+#side-nav-footer p {
+  color: rgba(0,0,0,0.87);
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 48px;
+  padding: 0 32px;
+  margin: 0;
+}

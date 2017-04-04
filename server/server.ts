@@ -18,12 +18,26 @@ import * as Config from '../config';
 
 let app = express();
 
+// CORS middleware
+let allowCrossDomain = function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+};
+
+app.use(allowCrossDomain);
+
 app.use(Config.ROOT_URL_EXPRESS, router);
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(Config.ROOT_URL_EXPRESS, express.static(path.join(__dirname, '../dist/')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
+});
 
 if (Config.PORT) {
   const port = Config.PORT || 3000;

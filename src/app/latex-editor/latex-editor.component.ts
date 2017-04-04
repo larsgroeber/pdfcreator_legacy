@@ -48,10 +48,11 @@ export class LatexEditorComponent implements OnInit {
    * Deletes a document.
    */
   onDeleteDoc(): void {
-    this.latex.deleteDoc(this.selectedDocName).subscribe(() => {}, err => this.showError(err));
+    this.latex.deleteDoc(this.selectedDocName).subscribe(() => {
+      this.updateDocList();
+    }, err => this.showError(err));
     this.selectedDocName = '';
     this.currentDocName = '';
-    this.updateDocList();
   }
 
   /**

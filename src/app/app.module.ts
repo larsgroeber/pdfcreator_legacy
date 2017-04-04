@@ -11,6 +11,10 @@ import {FileManagerComponent} from './file-manager/file-manager.component';
 import {LatexEditorComponent} from './latex-editor/latex-editor.component';
 import {NotifyService} from "./services/notify.service";
 import {FileSelectDirective} from "ng2-file-upload";
+import {RouterModule} from "@angular/router";
+import {appRoutes} from "./routes";
+import { TemplateSelectComponent } from './template-select/template-select.component';
+
 
 @NgModule({
   declarations: [
@@ -19,15 +23,18 @@ import {FileSelectDirective} from "ng2-file-upload";
     TextEditorComponent,
     FileManagerComponent,
     LatexEditorComponent,
-    FileSelectDirective
+    FileSelectDirective,
+    TemplateSelectComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
-    HttpModule
+    HttpModule,
+    RouterModule.forRoot(appRoutes)
   ],
   providers: [NotifyService, LatexService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
 }
+

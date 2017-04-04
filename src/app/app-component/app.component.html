@@ -1,3 +1,28 @@
-<div class="container-fluid">
-    <app-pdfinput></app-pdfinput>
+<div id="side-nav">
+  <ul id="slide-out" class="side-nav fixed">
+    <li>
+      <div id="side-nav-header">
+      </div>
+    </li>
+    <li><div class="divider"></div></li>
+    <li><a [routerLink]="['/']" routerLinkActive="active">Use Template</a></li>
+    <li><a [routerLink]="['/edit']" routerLinkActive="active">Edit Templates</a></li>
+    <li id="side-nav-footer">
+      <p>Build by PhysikOnline</p>
+    </li>
+  </ul>
+</div>
+<div class="main">
+  <nav>
+    <div class="nav-wrapper">
+      <a href="#" id="side-nav-toggle" data-activates="slide-out" class="button-collapse"><i class="material-icons">menu</i></a>
+      <a href="#" class="brand-logo">PDFCreator</a>
+      <ul class="right">
+        <li><a href="collapsible.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+  <div id="main-content">
+    <router-outlet></router-outlet>
+  </div>
 </div>
