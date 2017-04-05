@@ -1,13 +1,17 @@
 #side-nav-header {
   width: 300px;
   height: 123px;
-  background: url('../../assets/Starker_Start_Logo.png') no-repeat;
+  background: url('../../assets/starker_start_logo.png') no-repeat;
   background-size: 290px 123px;
 }
 
 #slide-out {
   background-color: #fff;
   height: 100%;
+}
+
+#slide-out a {
+  text-decoration: none !important;
 }
 
 nav {
@@ -43,7 +47,7 @@ nav a {
 }
 
 #side-nav-footer p {
-  color: rgba(0,0,0,0.87);
+  color: rgba(0,0,0,0.3);
   display: block;
   font-size: 14px;
   font-weight: 500;

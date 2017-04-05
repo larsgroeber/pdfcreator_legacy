@@ -10,8 +10,8 @@ import {Component, OnInit} from '@angular/core';
 import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
 import {Template} from '../../include/Template';
 import * as _ from 'lodash';
-import {LatexService} from "../services/latex.service";
-import {NotifyService} from "../services/notify.service";
+import {APIService} from "../api.service";
+import {LatexService} from "../latex-editor/latex.service";
 import {mFile} from "../mfile";
 
 interface Replacement {
@@ -36,7 +36,7 @@ export class PDFDisplayComponent implements OnInit {
   private _mainTex: mFile;
   private _docName: string;
 
-  constructor(private sanitizer: DomSanitizer, private latex: LatexService, private notify: NotifyService) {
+  constructor(private sanitizer: DomSanitizer, private latex: APIService, private notify: LatexService) {
   }
 
   /**
@@ -65,6 +65,10 @@ export class PDFDisplayComponent implements OnInit {
       });
     });
     this.genPDF();
+  }
+
+  onTemplateChange(template): void {
+    this._docName = template;
   }
 
   /**

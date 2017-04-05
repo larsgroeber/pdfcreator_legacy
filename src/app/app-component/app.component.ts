@@ -1,9 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
-import {NotifyService} from "../services/notify.service";
 
 declare let $: any;
-declare let Materialize: any;
 
 @Component({
   selector: 'app-root',

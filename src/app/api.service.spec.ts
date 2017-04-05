@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { LatexService } from './latex.service';
+import { APIService } from './api.service';
 
 describe('LatexService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [LatexService]
+      providers: [APIService]
     });
   });
 
-  it('should ...', inject([LatexService], (service: LatexService) => {
+  it('should ...', inject([APIService], (service: APIService) => {
     expect(service).toBeTruthy();
   }));
 });

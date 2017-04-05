@@ -19,6 +19,4 @@
     </div>
 </div>
 <div class="alert alert-danger" *ngIf="error">{{error}}</div>
-<hr>
-
-<app-latex-editor></app-latex-editor>
+<app-template-select (templateSelected)="onTemplateChange($event)"></app-template-select>

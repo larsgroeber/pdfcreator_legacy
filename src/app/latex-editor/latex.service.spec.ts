@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { NotifyService } from './notify.service';
+import { LatexService } from './latex.service';
 
 describe('NotifyService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [NotifyService]
+      providers: [LatexService]
     });
   });
 
-  it('should ...', inject([NotifyService], (service: NotifyService) => {
+  it('should ...', inject([LatexService], (service: LatexService) => {
     expect(service).toBeTruthy();
   }));
 });

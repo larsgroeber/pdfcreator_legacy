@@ -26,3 +26,7 @@
   color: black;
   background-color: #ffeb3b;
 }
+
+.modal-footer {
+  height: 10px;
+}

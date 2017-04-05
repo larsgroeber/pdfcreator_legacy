@@ -1,0 +1,7 @@
+<div class="template-select-component input-field">
+  <select [(ngModel)]="selected" name="template" (change)="onSelect()" id="template-select-select">
+    <option value="" disabled selected>Choose a template</option>
+    <option *ngFor="let template of templates" value="{{template}}">{{template}}</option>
+  </select>
+  <label>Template:</label>
+</div>

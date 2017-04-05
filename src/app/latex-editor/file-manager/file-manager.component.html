@@ -1,0 +1,45 @@
+<div>
+  <div id="file-manager-main-btns">
+    <button class="btn waves-effect btn-primary" (click)="saveFiles()"><i class="material-icons">save</i></button>
+    <button class="btn waves-effect red" *ngIf="selectedFile && selectedFile.name"
+            (click)="deleteFile()"><i class="material-icons">delete</i></button>
+  </div>
+  <ul class="list-group">
+    <li class="list-group-item" *ngFor="let file of files"
+        [style.background-color]="(file === selectedFile) ? '#FFCA28' : ''" (click)="onFileClick(file)">{{file.name}}
+    </li>
+  </ul>
+  <div>
+    <div class="fixed-action-btn horizontal">
+      <a href="#new-file-dialog" class="btn-floating waves-effect btn-large red">
+        <i class="material-icons">add</i>
+      </a>
+      <ul>
+        <li>
+          <a href="#upload-file-dialog" class="btn-floating waves-effect blue">
+            <i class="material-icons">file_upload</i>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="modal" id="new-file-dialog">
+    <div class="modal-content">
+      <label for="new-file-name">New File:</label>
+      <input id="new-file-name" class="form-control" [(ngModel)]="fileName" name="fileName">
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary pull-left modal-close" (click)="onNewFileSave()">Save</button>
+    </div>
+  </div>
+  <div class="modal bottom-sheet" id="upload-file-dialog">
+    <div class="modal-content">
+      <label for="upload-file-name">Choose file:</label>
+      <input id="upload-file-name" type="file" ng2FileSelect [uploader]="uploader"/>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary pull-left modal-close" (click)="onFileUpload()">Save</button>
+    </div>
+  </div>
+  <div class="alert {{infoClass}}" id="file-manager-info-box" *ngIf="info">{{info}}</div>
+</div>

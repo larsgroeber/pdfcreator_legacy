@@ -7,8 +7,11 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {LatexService} from "../services/latex.service";
-import {NotifyService} from "../services/notify.service";
+import {APIService} from "../api.service";
+import {LatexService} from "./latex.service";
+import {Helper} from "../../include/helper";
+
+declare let $: any;
 
 @Component({
   selector: 'app-latex-editor',
@@ -17,41 +20,38 @@ import {NotifyService} from "../services/notify.service";
 })
 
 export class LatexEditorComponent implements OnInit {
-  selectedDocName: string;
   currentDocName: string;
   public documents: string[];
   public showNewDocDialog: boolean = false;
 
-  error: string;
+  constructor(private latex: APIService, private notify: LatexService) {}
 
-  constructor(private latex: LatexService, private notify: NotifyService) {}
-
-  /**
-   * Gets called whenever the PDF view should be updated.
-   * Effectively tells file-manager to save all files and pdf-input to recompile the PDF.
-   */
   onCompilePDF(): void {
     this.onSavePDF();
     this.notify.onCompilePDF(this.currentDocName);
   }
 
   onSavePDF(): void {
-    this.notify.onSaveFiles(this.selectedDocName);
+    this.notify.onSaveFiles(this.currentDocName);
   }
 
   onLoadDoc(): void {
-    this.currentDocName = this.selectedDocName;
     this.notify.onloadDoc(this.currentDocName);
+  }
+
+  onTemplateChange(template): void {
+    console.log(template);
+    this.currentDocName = template;
+    this.onLoadDoc();
   }
 
   /**
    * Deletes a document.
    */
   onDeleteDoc(): void {
-    this.latex.deleteDoc(this.selectedDocName).subscribe(() => {
-      this.updateDocList();
-    }, err => this.showError(err));
-    this.selectedDocName = '';
+    this.latex.deleteDoc(this.currentDocName).subscribe(() => {
+      this.notify.onloadTemplates();
+    }, err => Helper.displayMessage(err));
     this.currentDocName = '';
   }
 
@@ -60,22 +60,16 @@ export class LatexEditorComponent implements OnInit {
    */
   onCreateDoc(): void {
     this.showNewDocDialog = false;
-    this.latex.createNewDoc(this.selectedDocName).subscribe(() => {
+    this.latex.createNewDoc(this.currentDocName).subscribe(() => {
       this.onLoadDoc();
-      this.updateDocList();
-    }, err => this.showError(err));
+      this.notify.onloadTemplates();
+    }, err => Helper.displayMessage(err));
   }
 
-  updateDocList(): void {
-    this.latex.getAllDocs().subscribe(docs => this.documents = docs, err => this.showError(err));
-  }
-
-  showError(err: string): void {
-    this.error = err;
-    setTimeout(() => this.error = '', 10000);
-  }
 
   ngOnInit() {
-    this.updateDocList();
+    $(document).ready(function(){
+      $('.modal').modal();
+    });
   }
 }

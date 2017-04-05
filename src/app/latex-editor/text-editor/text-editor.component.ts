@@ -7,7 +7,7 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {NotifyService} from "../services/notify.service";
+import {LatexService} from "../latex.service";
 
 @Component({
   selector: 'app-text-editor',
@@ -19,7 +19,7 @@ export class TextEditorComponent implements OnInit {
   @Input() public text: string;
   @Output() public textChange: EventEmitter<string> = new EventEmitter<string>();
 
-  constructor(private notify: NotifyService) {
+  constructor(private notify: LatexService) {
     this.notify.textChangeOb.subscribe(text => {
       this.text = text;
     })
