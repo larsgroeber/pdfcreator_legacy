@@ -16,6 +16,7 @@ import {appRoutes} from "./routes";
 import { TemplateSelectComponent } from './template-select/template-select.component';
 import { FillTemplateComponent } from './fill-template/fill-template.component';
 import {CompilerService} from "./compiler.service";
+import { AboutComponent } from './about/about.component';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import {CompilerService} from "./compiler.service";
     LatexEditorComponent,
     FileSelectDirective,
     TemplateSelectComponent,
-    FillTemplateComponent
+    FillTemplateComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,

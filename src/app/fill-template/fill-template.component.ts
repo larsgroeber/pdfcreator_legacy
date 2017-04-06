@@ -7,16 +7,15 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {DomSanitizer, SafeUrl} from '@angular/platform-browser';
-import {Template} from '../../include/Template';
+import {SafeUrl, Title} from '@angular/platform-browser';
 import * as _ from 'lodash';
 import {APIService} from "../api.service";
-import {LatexService} from "../latex-editor/latex.service";
 import {mFile} from "../mfile";
 import {Replacement} from "../replacement";
 import {Helper} from "../../include/helper";
 import {CompilerService} from "../compiler.service";
 
+import * as Config from '../../../config';
 
 
 @Component({
@@ -36,7 +35,9 @@ export class FillTemplateComponent implements OnInit {
   private _mainTex: mFile;
   private _docName: string;
 
-  constructor(private sanitizer: DomSanitizer, private api: APIService, private compiler: CompilerService) {
+  constructor(private api: APIService
+    , private compiler: CompilerService
+    , private titleService: Title) {
   }
 
   /**
@@ -71,6 +72,7 @@ export class FillTemplateComponent implements OnInit {
 
   onTemplateChange(template): void {
     this._docName = template;
+    this.titleService.setTitle(`${Config.APP_NAME} - ${this._docName}`);
     this.onUpdatePDF();
   }
 
@@ -92,5 +94,6 @@ export class FillTemplateComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.titleService.setTitle(`${Config.APP_NAME}`);
   }
 }

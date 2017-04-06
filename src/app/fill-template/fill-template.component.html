@@ -1,19 +1,22 @@
 <app-template-select (templateSelected)="onTemplateChange($event)"></app-template-select>
 <div class="row">
-  <div class="col m6">
-    <form *ngIf="keys && keys.length > 0">
-      <p>Placeholder:</p>
-      <div class="input-field" *ngFor="let key of keys">
-        <label for="{{key.name}}">{{key.name}}</label>
-        <input id="{{key.name}}" name="{{key.name}}" type="text"
-               [(ngModel)]="key.value">
+  <div class="col xl4 l12 m12 s12" style="margin-bottom: 10px">
+    <div *ngIf="_docName">
+      <div *ngIf="keys && keys.length > 0">
+        <p>Placeholders:</p>
+        <div class="input-field" *ngFor="let key of keys">
+          <label for="{{key.name}}">{{key.name}}</label>
+          <input id="{{key.name}}" name="{{key.name}}" type="text"
+                 [(ngModel)]="key.value">
+        </div>
       </div>
+      <p *ngIf="! keys || keys.length == 0">No replacement keys found.</p>
 
       <a [href]="safeUri" download="{{_docName}}.pdf" class="btn btn-primary" (click)="downloadPDF()">Download</a>
       <button class="btn btn-primary right" (click)="onUpdateInput()">Update</button>
-    </form>
+    </div>
   </div>
-  <div class="col m6">
+  <div class="col xl8 l12 m12 s12">
     <app-pdf-display [safeUri]="safeUri"></app-pdf-display>
   </div>
 </div>

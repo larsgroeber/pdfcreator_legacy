@@ -11,7 +11,9 @@ import {APIService} from "../api.service";
 import {LatexService} from "./latex.service";
 import {Helper} from "../../include/helper";
 import {CompilerService} from "../compiler.service";
-import {SafeUrl} from "@angular/platform-browser";
+import {SafeUrl, Title} from "@angular/platform-browser";
+
+import * as Config from '../../../config';
 
 declare let $: any;
 
@@ -28,7 +30,10 @@ export class LatexEditorComponent implements OnInit {
   public replacementKeys: string[];
   public safeURL: SafeUrl;
 
-  constructor(private api: APIService, private notify: LatexService, private compiler: CompilerService) {}
+  constructor(private api: APIService
+    , private notify: LatexService
+    , private compiler: CompilerService
+    , private titleService: Title) {}
 
   onCompilePDF(): void {
     this.onSavePDF();
@@ -40,7 +45,6 @@ export class LatexEditorComponent implements OnInit {
       }
       this.showCompiledPDF = true;
       this.replacementKeys = this.compiler.getKeys(mainTex.text);
-      console.log(this.replacementKeys);
       this.compiler.compileLatex(this.currentDocName, mainTex.text, url => this.safeURL = url);
     });
   }
@@ -57,6 +61,7 @@ export class LatexEditorComponent implements OnInit {
   onTemplateChange(template): void {
     console.log(template);
     this.currentDocName = template;
+    this.titleService.setTitle(`${Config.APP_NAME} - edit: ${this.currentDocName}`);
     this.onLoadDoc();
   }
 
@@ -66,7 +71,7 @@ export class LatexEditorComponent implements OnInit {
   onDeleteDoc(): void {
     this.api.deleteDoc(this.currentDocName).subscribe(() => {
       this.notify.onloadTemplates();
-    }, err => Helper.displayMessage(err));
+    }, err => Helper.displayMessage(err, 0));
     this.currentDocName = '';
   }
 
@@ -98,5 +103,7 @@ export class LatexEditorComponent implements OnInit {
         return false;
       })
     });
+
+    this.titleService.setTitle(`${Config.APP_NAME} - edit`);
   }
 }

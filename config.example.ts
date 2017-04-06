@@ -1,4 +1,10 @@
 
+export const APP_NAME = 'PDFCreator';
+
+////// SERVER //////
+// URL to the main site
+export const SERVER_URL = 'http://localhost:4000';
+
 // Root url of the page
 export const ROOT_URL = '/';
 
@@ -6,18 +12,17 @@ export const ROOT_URL = '/';
 export const ROOT_URL_EXPRESS = '/';
 
 // Http Port on which the server should listen, leave empty (0) to disable http and only use https
-export const PORT = 3000;
+export const PORT = 4000;
 
 // Path to the folder where you want to save assets needed to compile latex documents
 export const DATA_PATH = '/home/lars/Documents/programming/angular2Test/pdfcreator/data/latex/';
 
-// URL to the backend
-export const SERVER_URL = 'http://localhost:3000';
-
 ////// SSL //////
-// Paths to private key and certificate, leave empty if you do not need https
+// Leave any of these empty if you do not need https
+// Paths to private key and certificate
 export const PRIVATE_KEY = '';
 export const CERTIFICATE = '';
 
 // Https Port
 export const PORT_SSL = 3001;
+
