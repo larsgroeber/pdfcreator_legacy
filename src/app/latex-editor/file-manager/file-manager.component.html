@@ -6,7 +6,7 @@
   </div>
   <ul class="collection">
     <li class="collection-item" *ngFor="let file of files"
-        [style.background-color]="(file === selectedFile) ? '#FFCA28' : ''" (click)="onFileClick(file)">{{file.name}}
+        [style.background-color]="(file === selectedFile) ? '#F8AC00' : ''" (click)="onFileClick(file)">{{file.name}}
     </li>
   </ul>
   <div>
@@ -25,8 +25,10 @@
   </div>
   <div class="modal" id="new-file-dialog">
     <div class="modal-content">
-      <label for="new-file-name">New File:</label>
-      <input id="new-file-name" class="form-control" [(ngModel)]="fileName" name="fileName">
+      <div class="input-field">
+        <input id="new-file-name" [(ngModel)]="fileName" name="fileName">
+        <label for="new-file-name">New File:</label>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-primary pull-left modal-close" (click)="onNewFileSave()">Save</button>

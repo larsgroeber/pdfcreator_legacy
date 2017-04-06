@@ -14,8 +14,12 @@
   text-decoration: none !important;
 }
 
+#slide-out .active {
+  color: #F8AC00;
+}
+
 nav {
-  background-color: #005DA7;
+  background-color: #F8AC00;
 }
 
 nav a {
@@ -25,9 +29,6 @@ nav a {
 
 .nav-wrapper {
   padding-left: 10px;
-}
-
-.nav-wrapper > a {
 }
 
 #main-content {
@@ -54,4 +55,8 @@ nav a {
   line-height: 48px;
   padding: 0 32px;
   margin: 0;
+}
+
+#author-link {
+  color: rgba(0,0,0,0.3);
 }

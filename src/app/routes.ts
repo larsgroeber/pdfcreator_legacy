@@ -5,7 +5,8 @@ import {FillTemplateComponent} from "./fill-template/fill-template.component";
 import {AboutComponent} from "./about/about.component";
 
 export const appRoutes: Routes = [
-  {path: '', component: FillTemplateComponent},
+  {path: '', redirectTo: '/use', pathMatch: 'full'},
+  {path: 'use', component: FillTemplateComponent},
   {path: 'edit', component: LatexEditorComponent},
   {path: 'about', component: AboutComponent},
 ];

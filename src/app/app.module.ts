@@ -26,7 +26,6 @@ import { AboutComponent } from './about/about.component';
     TextEditorComponent,
     FileManagerComponent,
     LatexEditorComponent,
-    FileSelectDirective,
     TemplateSelectComponent,
     FillTemplateComponent,
     AboutComponent

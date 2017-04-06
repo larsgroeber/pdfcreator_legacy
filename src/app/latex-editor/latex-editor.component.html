@@ -14,22 +14,37 @@
   <div class="alert alert-danger" *ngIf="error">{{error}}</div>
   <app-template-select (templateSelected)="onTemplateChange($event)"></app-template-select>
   <div id="template-buttons">
-    <button class="btn btn-raised btn-primary" *ngIf="currentDocName" (click)="onDeleteDoc()">Delete</button>
-    <button class="btn btn-raised btn-primary" data-target="new-doc-dialog">Create New</button>
-    <button class="btn btn-raised btn-primary pull-right" *ngIf="currentDocName"
-            (click)="onCompilePDF()">Compile PDF</button><br>
+    <button class="btn btn-raised btn-primary btn-space" data-target="delete-doc-dialog"
+            *ngIf="currentDocName">Delete</button>
+    <button class="btn btn-raised btn-primary btn-space" data-target="new-doc-dialog">New</button>
+    <button class="btn btn-raised btn-primary right btn-space" *ngIf="currentDocName"
+            (click)="onCompilePDF()">Compile PDF</button>
+  </div>
+
+  <div class="modal" id="delete-doc-dialog">
+    <div class="modal-content">
+      Are you sure to delete the template {{currentDocName}}?
+    </div>
+    <div class="modal-footer">
+      <button class="btn-flat modal-close left modal-action" (click)="onDeleteDoc()">Yes</button>
+      <button class="btn-flat left modal-close modal-action">No</button>
+    </div>
   </div>
 
   <div class="modal" id="new-doc-dialog">
     <div class="modal-content">
-      <label for="newName">Name des Templates</label>
-      <input id="newName" type="text" class="form-control" [(ngModel)]="currentDocName">
-      <a class="btn modal-close pull-left modal-action" (click)="onCreateDoc()">Create</a>
+      <div class="input-field">
+        <label for="newName">Name des Templates</label>
+        <input id="newName" type="text" class="form-control" [(ngModel)]="currentDocName">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-flat modal-close left modal-action" (click)="onCreateDoc()">Create</button>
     </div>
   </div>
 </div>
 <div class="row" style="margin-top: 20px" [hidden]="!currentDocName">
-  <app-file-editor class="col m3"></app-file-editor>
-  <app-text-editor class="col m9" ngDefaultControl></app-text-editor>
+  <app-file-editor class="col xl3 l4 m4 s12"></app-file-editor>
+  <app-text-editor class="col xl9 l8 m8 s12" ngDefaultControl></app-text-editor>
 </div>
 <button href="#" class="btn-floating waves-effect scroll-to-top"><i class="material-icons">arrow_upward</i></button>
