@@ -6,8 +6,11 @@
  * @author Lars Gröber
  */
 
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
+import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {LatexService} from "../latex.service";
+
+declare let $: any;
+declare let Materialize: any;
 
 @Component({
   selector: 'app-text-editor',
@@ -22,6 +25,9 @@ export class TextEditorComponent implements OnInit {
   constructor(private notify: LatexService) {
     this.notify.textChangeOb.subscribe(text => {
       this.text = text;
+      $('#latex-text').val(this.text);
+      $('#latex-text').trigger('autoresize');
+      Materialize.updateTextFields();
     })
   }
 

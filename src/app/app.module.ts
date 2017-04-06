@@ -14,6 +14,8 @@ import {FileSelectDirective} from "ng2-file-upload";
 import {RouterModule} from "@angular/router";
 import {appRoutes} from "./routes";
 import { TemplateSelectComponent } from './template-select/template-select.component';
+import { FillTemplateComponent } from './fill-template/fill-template.component';
+import {CompilerService} from "./compiler.service";
 
 
 @NgModule({
@@ -24,7 +26,8 @@ import { TemplateSelectComponent } from './template-select/template-select.compo
     FileManagerComponent,
     LatexEditorComponent,
     FileSelectDirective,
-    TemplateSelectComponent
+    TemplateSelectComponent,
+    FillTemplateComponent
   ],
   imports: [
     BrowserModule,
@@ -32,7 +35,7 @@ import { TemplateSelectComponent } from './template-select/template-select.compo
     HttpModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [LatexService, APIService],
+  providers: [LatexService, APIService, CompilerService],
   bootstrap: [AppComponent]
 })
 export class AppModule {

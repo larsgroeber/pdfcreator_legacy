@@ -10,6 +10,8 @@ import {Component, OnInit} from '@angular/core';
 import {APIService} from "../api.service";
 import {LatexService} from "./latex.service";
 import {Helper} from "../../include/helper";
+import {CompilerService} from "../compiler.service";
+import {SafeUrl} from "@angular/platform-browser";
 
 declare let $: any;
 
@@ -21,14 +23,26 @@ declare let $: any;
 
 export class LatexEditorComponent implements OnInit {
   currentDocName: string;
-  public documents: string[];
-  public showNewDocDialog: boolean = false;
+  public showNewDocDialog = false;
+  public showCompiledPDF = false;
+  public replacementKeys: string[];
+  public safeURL: SafeUrl;
 
-  constructor(private latex: APIService, private notify: LatexService) {}
+  constructor(private api: APIService, private notify: LatexService, private compiler: CompilerService) {}
 
   onCompilePDF(): void {
     this.onSavePDF();
-    this.notify.onCompilePDF(this.currentDocName);
+    this.api.getOneDoc(this.currentDocName).subscribe(data => {
+      let mainTex = data.find(f => f.name === 'main.tex');
+      if (!mainTex) {
+        Helper.displayMessage('Could not find main.tex', 0);
+        return;
+      }
+      this.showCompiledPDF = true;
+      this.replacementKeys = this.compiler.getKeys(mainTex.text);
+      console.log(this.replacementKeys);
+      this.compiler.compileLatex(this.currentDocName, mainTex.text, url => this.safeURL = url);
+    });
   }
 
   onSavePDF(): void {
@@ -37,6 +51,7 @@ export class LatexEditorComponent implements OnInit {
 
   onLoadDoc(): void {
     this.notify.onloadDoc(this.currentDocName);
+    this.showCompiledPDF = false;
   }
 
   onTemplateChange(template): void {
@@ -49,7 +64,7 @@ export class LatexEditorComponent implements OnInit {
    * Deletes a document.
    */
   onDeleteDoc(): void {
-    this.latex.deleteDoc(this.currentDocName).subscribe(() => {
+    this.api.deleteDoc(this.currentDocName).subscribe(() => {
       this.notify.onloadTemplates();
     }, err => Helper.displayMessage(err));
     this.currentDocName = '';
@@ -60,7 +75,7 @@ export class LatexEditorComponent implements OnInit {
    */
   onCreateDoc(): void {
     this.showNewDocDialog = false;
-    this.latex.createNewDoc(this.currentDocName).subscribe(() => {
+    this.api.createNewDoc(this.currentDocName).subscribe(() => {
       this.onLoadDoc();
       this.notify.onloadTemplates();
     }, err => Helper.displayMessage(err));
@@ -70,6 +85,18 @@ export class LatexEditorComponent implements OnInit {
   ngOnInit() {
     $(document).ready(function(){
       $('.modal').modal();
+
+      $(window).scroll(() => {
+        if ($('body').scrollTop() > 100) {
+          $('.scroll-to-top').fadeIn();
+        } else {
+          $('.scroll-to-top').fadeOut();
+        }
+      })
+      $(`.scroll-to-top`).click(() => {
+        $('html body').animate({scrollTop: 0}, 800);
+        return false;
+      })
     });
   }
 }

@@ -4,7 +4,7 @@
  * @author Lars Gröber
  */
 
-import {Component, EventEmitter, OnInit, Output} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
 import {APIService} from "../api.service";
 import {Helper} from "../../include/helper";
 import {LatexService} from "../latex-editor/latex.service";
@@ -16,22 +16,27 @@ declare let $: any;
   templateUrl: './template-select.component.html',
   styleUrls: ['./template-select.component.css']
 })
-export class TemplateSelectComponent implements OnInit {
+export class TemplateSelectComponent implements OnInit, AfterViewInit {
   public templates: string[];
-  public selected: string;
+
+  @ViewChild('select') select: ElementRef;
 
   @Output() templateSelected: EventEmitter<string> = new EventEmitter<string>();
 
   constructor(private latex: APIService, private notify: LatexService) { }
 
-  onSelect(): void {
-    console.log(this.selected)
-    this.templateSelected.emit(this.selected);
+  onSelect(template: string): void {
+    if (template) {
+      this.templateSelected.emit(template);
+    }
   }
 
   reloadTemplates(): void {
     this.latex.getAllDocs().subscribe(docs => {
         this.templates = docs;
+        $(document).ready(function() {
+          $('select').material_select();
+        });
       },
       err => Helper.displayMessage(err));
   }
@@ -40,9 +45,13 @@ export class TemplateSelectComponent implements OnInit {
     this.reloadTemplates();
 
     this.notify.loadTemplatesOb.subscribe(() => this.reloadTemplates());
+  }
 
-    $(document).ready(function() {
-      $('select').material_select();
-    });
+  ngAfterViewInit(): void {
+    // hack to get selected element because materializecss changes dom
+    $(this.select.nativeElement).on('change', () => {
+      let list = this.select.nativeElement.getElementsByClassName('active selected')[0];
+      this.onSelect(list.getElementsByTagName('span')[0].innerHTML);
+    })
   }
 }
