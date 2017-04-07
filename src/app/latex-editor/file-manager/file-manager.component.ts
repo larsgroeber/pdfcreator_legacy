@@ -3,7 +3,6 @@
  *
  * Displays a file manager and is responsible for saving and creating files.
  * TODO: display warning if user closes window
- * TODO: keep track of if files need to be saved
  *
  * @author Lars Gröber
  */
@@ -32,14 +31,17 @@ export class FileManagerComponent implements OnInit {
   private files: mFile[];
   private selectedFile: mFile = { name: '', text: ''};
 
+  private _needsSave = false;
+
   // info box
   public info: string;
-  public infoClass: string;
 
+  public infoClass: string;
   // new files
   public fileName: string;
   public uploader: FileUploader = new FileUploader({ url: URL });
   public showNewFileDialog: boolean = false;
+
   public showUploadFileDialog: boolean = false;
 
   @Input() docName: string;
@@ -60,12 +62,13 @@ export class FileManagerComponent implements OnInit {
    * Is called whenever all files should be saved.
    */
   saveFiles(): void {
-    if (!this.files) return;
+    if (!this.files || !this._needsSave) return;
     console.log('Save files ' + this.docName);
     this.latex.updateDoc(this.docName, this.files).subscribe(files => {
       if (files) {
         Helper.displayMessage('Files saved!');
       }
+      this._needsSave = false;
     }, err => Helper.displayMessage(err, 0));
   }
 
@@ -77,6 +80,7 @@ export class FileManagerComponent implements OnInit {
     if (index !== -1) {
       this.files.splice(index, 1);
       this.notify.onTextChange('');
+      this._needsSave = true;
     }
   }
 
@@ -96,6 +100,7 @@ export class FileManagerComponent implements OnInit {
       }
       this.reloadFiles();
       this.showUploadFileDialog = false;
+      this._needsSave = true;
     };
     this.uploader.uploadAll();
   }
@@ -109,6 +114,7 @@ export class FileManagerComponent implements OnInit {
       text: '',
     });
     this.onFileClick(this.files[this.files.length - 1]);
+    this._needsSave = true;
     this.showNewFileDialog = false;
   }
 
@@ -129,7 +135,8 @@ export class FileManagerComponent implements OnInit {
   ngOnInit() {
     // listen to notify events
     this.notify.textChangeOb.subscribe(text => {
-      if (this.selectedFile) {
+      if (this.selectedFile && this.selectedFile.text !== text) {
+        this._needsSave = true;
         this.selectedFile.text = text;
       }
     });

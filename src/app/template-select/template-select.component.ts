@@ -36,8 +36,8 @@ export class TemplateSelectComponent implements OnInit, AfterViewInit {
         console.log(selected);
         this.templates = docs;
         $(document).ready(() => {
-          $('select').material_select();
           $('select').val(selected);
+          $('select').material_select();
         });
       },
       err => Helper.displayMessage(err));

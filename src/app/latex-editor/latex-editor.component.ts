@@ -56,13 +56,22 @@ export class LatexEditorComponent implements OnInit {
 
   onLoadDoc(): void {
     this.notify.onloadDoc(this.currentDocName);
+    this.changeTitle();
     this.showCompiledPDF = false;
   }
 
   onTemplateChange(template): void {
     this.currentDocName = template;
-    this.titleService.setTitle(`${Config.APP_NAME} - edit: ${this.currentDocName}`);
+    this.changeTitle();
     this.onLoadDoc();
+  }
+
+  changeTitle(): void {
+    if (this.currentDocName) {
+      this.titleService.setTitle(`${Config.APP_NAME} - edit: ${this.currentDocName}`);
+    } else {
+      this.titleService.setTitle(`${Config.APP_NAME} - edit`);
+    }
   }
 
   /**
@@ -72,6 +81,7 @@ export class LatexEditorComponent implements OnInit {
     this.api.deleteDoc(this.currentDocName).subscribe(() => {
       this.notify.onloadTemplates('');
       this.currentDocName = '';
+      this.changeTitle();
     }, err => Helper.displayMessage(err, 0));
   }
 
