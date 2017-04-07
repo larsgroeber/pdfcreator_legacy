@@ -29,6 +29,7 @@ export class LatexEditorComponent implements OnInit {
   public showCompiledPDF = false;
   public replacementKeys: string[];
   public safeURL: SafeUrl;
+  public newDocName: string;
 
   constructor(private api: APIService
     , private notify: LatexService
@@ -59,7 +60,6 @@ export class LatexEditorComponent implements OnInit {
   }
 
   onTemplateChange(template): void {
-    console.log(template);
     this.currentDocName = template;
     this.titleService.setTitle(`${Config.APP_NAME} - edit: ${this.currentDocName}`);
     this.onLoadDoc();
@@ -70,9 +70,9 @@ export class LatexEditorComponent implements OnInit {
    */
   onDeleteDoc(): void {
     this.api.deleteDoc(this.currentDocName).subscribe(() => {
-      this.notify.onloadTemplates();
+      this.notify.onloadTemplates('');
+      this.currentDocName = '';
     }, err => Helper.displayMessage(err, 0));
-    this.currentDocName = '';
   }
 
   /**
@@ -80,9 +80,11 @@ export class LatexEditorComponent implements OnInit {
    */
   onCreateDoc(): void {
     this.showNewDocDialog = false;
-    this.api.createNewDoc(this.currentDocName).subscribe(() => {
+    this.api.createNewDoc(this.newDocName).subscribe(() => {
+      this.currentDocName = this.newDocName;
+      this.newDocName = '';
       this.onLoadDoc();
-      this.notify.onloadTemplates();
+      this.notify.onloadTemplates(this.currentDocName);
     }, err => Helper.displayMessage(err));
   }
 
@@ -92,14 +94,16 @@ export class LatexEditorComponent implements OnInit {
       $('.modal').modal();
 
       $(window).scroll(() => {
-        if ($('body').scrollTop() > 100) {
+        // make it work in chrome and firefox
+        let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        if (scrollTop > 100) {
           $('.scroll-to-top').fadeIn();
         } else {
           $('.scroll-to-top').fadeOut();
         }
       })
       $(`.scroll-to-top`).click(() => {
-        $('html body').animate({scrollTop: 0}, 800);
+        $('html, body').animate({scrollTop: 0}, 800);
         return false;
       })
     });

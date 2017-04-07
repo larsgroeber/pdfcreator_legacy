@@ -2,7 +2,7 @@
   <div id="file-manager-main-btns">
     <button class="btn waves-effect btn-primary" (click)="saveFiles()"><i class="material-icons">save</i></button>
     <button class="btn waves-effect red" *ngIf="selectedFile && selectedFile.name"
-            (click)="deleteFile()"><i class="material-icons">delete</i></button>
+            data-target="delete-file-dialog"><i class="material-icons">delete</i></button>
   </div>
   <ul class="collection">
     <li class="collection-item" *ngFor="let file of files"
@@ -23,19 +23,34 @@
       </ul>
     </div>
   </div>
+
+  <!-- MODALS -->
+  <div class="modal" id="delete-file-dialog">
+    <div class="modal-content">
+      Are you sure you want to delete the file {{selectedFile.name}}?
+    </div>
+    <div class="modal-footer">
+      <button class="btn-flat modal-close left modal-action" (click)="deleteFile()">Yes</button>
+      <button class="btn-flat left modal-close modal-action">No</button>
+    </div>
+  </div>
+
   <div class="modal" id="new-file-dialog">
     <div class="modal-content">
+      <p>Add an empty file to this template:</p>
       <div class="input-field">
-        <input id="new-file-name" [(ngModel)]="fileName" name="fileName">
-        <label for="new-file-name">New File:</label>
+        <input id="new-file-name" [(ngModel)]="fileName" type="text" name="fileName">
+        <label for="new-file-name">New file</label>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-primary pull-left modal-close" (click)="onNewFileSave()">Save</button>
+      <button class="btn-flat left modal-close" (click)="onNewFileSave()">Save</button>
     </div>
   </div>
+
   <div class="modal" id="upload-file-dialog">
     <div class="modal-content">
+      Upload a new file:
       <div class="file-field input-field">
         <div class="btn">
           <span>File</span>
@@ -47,8 +62,7 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn btn-primary pull-left modal-close" (click)="onFileUpload()">Save</button>
+      <button class="btn-flat left modal-close" (click)="onFileUpload()">Save</button>
     </div>
   </div>
-  <div class="alert {{infoClass}}" id="file-manager-info-box" *ngIf="info">{{info}}</div>
 </div>

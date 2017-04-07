@@ -39,11 +39,11 @@ export class LatexService {
   }
 
   // event where a new doc should be loaded
-  private loadTemplates = new Subject();
+  private loadTemplates = new Subject<string>();
   loadTemplatesOb = this.loadTemplates.asObservable();
 
-  onloadTemplates(): void {
-    this.loadTemplates.next();
+  onloadTemplates(selectedDoc: string): void {
+    this.loadTemplates.next(selectedDoc);
   }
 
   // event where the current document should be compiled and rendered

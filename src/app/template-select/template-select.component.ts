@@ -31,20 +31,21 @@ export class TemplateSelectComponent implements OnInit, AfterViewInit {
     }
   }
 
-  reloadTemplates(): void {
+  reloadTemplates(selected: string): void {
     this.latex.getAllDocs().subscribe(docs => {
+        console.log(selected);
         this.templates = docs;
-        $(document).ready(function() {
+        $(document).ready(() => {
           $('select').material_select();
+          $('select').val(selected);
         });
       },
       err => Helper.displayMessage(err));
   }
 
   ngOnInit() {
-    this.reloadTemplates();
-
-    this.notify.loadTemplatesOb.subscribe(() => this.reloadTemplates());
+    this.notify.loadTemplatesOb.subscribe(selected => this.reloadTemplates(selected));
+    this.reloadTemplates('');
   }
 
   ngAfterViewInit(): void {

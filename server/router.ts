@@ -184,6 +184,10 @@ router.post('/api/latex/update/one', (req, res) => {
   let name: string = req.body.name;
   let newFiles: File[] = req.body.files;
   if (name && newFiles) {
+    if (!fs.existsSync(Config.DATA_PATH + name)) {
+      res.send({files: ''});
+      return;
+    }
     fs.readdir(Config.DATA_PATH + name, (err, oldFiles) => {
       if (!handleErr(err, res)) return;
       try {

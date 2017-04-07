@@ -63,7 +63,9 @@ export class FileManagerComponent implements OnInit {
     if (!this.files) return;
     console.log('Save files ' + this.docName);
     this.latex.updateDoc(this.docName, this.files).subscribe(files => {
-      Helper.displayMessage('Files saved!');
+      if (files) {
+        Helper.displayMessage('Files saved!');
+      }
     }, err => Helper.displayMessage(err, 0));
   }
 

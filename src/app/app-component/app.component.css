@@ -60,3 +60,10 @@ nav a {
 #author-link {
   color: rgba(0,0,0,0.3);
 }
+
+#alpha-plug {
+  position: absolute;
+  top: 5%;
+  font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial, sans-serif;
+  transform: rotate(15deg);
+}
