@@ -18,13 +18,11 @@ import { FillTemplateComponent } from './fill-template/fill-template.component';
 import {CompilerService} from "./compiler.service";
 import { AboutComponent } from './about/about.component';
 
-
 @NgModule({
   declarations: [
     AppComponent,
     PDFDisplayComponent,
     TextEditorComponent,
-    FileManagerComponent,
     LatexEditorComponent,
     TemplateSelectComponent,
     FillTemplateComponent,
