@@ -3,22 +3,20 @@
  *
  * Displays a file manager and is responsible for saving and creating files.
  * TODO: display warning if user closes window
+ * TODO: keep track of if files need to be saved
  *
  * @author Lars Gröber
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {APIService} from "../../api.service";
-import {LatexService} from "../latex.service";
-import {FileUploader} from "ng2-file-upload";
+import {LatexService} from '../services/latex.service';
+import {NotifyService} from '../services/notify.service';
+import {FileUploader} from 'ng2-file-upload';
 
-import * as Config from '../../../../config';
-import {mFile} from "../../mfile";
-import {Helper} from "../../../include/helper";
+import * as Config from '../../../config';
+import {mFile} from '../mfile';
 
-declare let $: any;
-
-const URL = Config.SERVER_URL + Config.ROOT_URL_EXPRESS + 'api/upload';
+const URL = Config.SERVER_URL + Config.ROOT_URL + 'api/upload';
 
 @Component({
   selector: 'app-file-editor',
@@ -31,22 +29,19 @@ export class FileManagerComponent implements OnInit {
   private files: mFile[];
   private selectedFile: mFile = { name: '', text: ''};
 
-  private _needsSave = false;
-
   // info box
   public info: string;
-
   public infoClass: string;
+
   // new files
   public fileName: string;
   public uploader: FileUploader = new FileUploader({ url: URL });
-  public showNewFileDialog: boolean = false;
-
-  public showUploadFileDialog: boolean = false;
+  public showNewFileDialog = false;
+  public showUploadFileDialog = false;
 
   @Input() docName: string;
 
-  constructor(private latex: APIService, private notify: LatexService) {
+  constructor(private latex: LatexService, private notify: NotifyService) {
   }
 
   /**
@@ -62,26 +57,40 @@ export class FileManagerComponent implements OnInit {
    * Is called whenever all files should be saved.
    */
   saveFiles(): void {
-    if (!this.files || !this._needsSave) return;
+    if (!this.files) return;
     console.log('Save files ' + this.docName);
     this.latex.updateDoc(this.docName, this.files).subscribe(files => {
-      if (files) {
-        Helper.displayMessage('Files saved!');
-      }
-      this._needsSave = false;
-    }, err => Helper.displayMessage(err, 0));
+      this.showInfo('Files saved!');
+    }, err => this.showInfo(err, 'error'));
   }
 
   /**
    * Deletes the selected file from files.
    */
   deleteFile(): void {
-    let index = this.files.indexOf(this.selectedFile);
+    const index = this.files.indexOf(this.selectedFile);
     if (index !== -1) {
       this.files.splice(index, 1);
       this.notify.onTextChange('');
-      this._needsSave = true;
     }
+  }
+
+  /**
+   * Helper function to display information in the info box.
+   * @param text
+   * @param logLevel
+   */
+  showInfo(text: string, logLevel?: string): void {
+    if (!logLevel) logLevel = 'log';
+    switch (logLevel) {
+      case 'log':
+        this.infoClass = 'alert-info';
+        break;
+      case 'error':
+        this.infoClass = 'alert-danger';
+    }
+    this.info = text;
+    setTimeout(() => { this.info = ''; }, 3000);
   }
 
   /**
@@ -91,16 +100,15 @@ export class FileManagerComponent implements OnInit {
     this.uploader.onBuildItemForm = (item, form) => {
       form.append('name', this.docName);
     };
-    this.uploader.onCompleteItem = (item:any, response:any, status:any, headers:any) => {
-      console.log("ImageUpload:uploaded:", item, status);
+    this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
+      console.log('ImageUpload:uploaded:', item, status);
       if (status !== 200) {
-        Helper.displayMessage("There was a problem uploading the file!", 0);
+        this.showInfo('There was a problem uploading the file!', 'error');
       } else {
-        Helper.displayMessage("File uploaded!");
+        this.showInfo('File uploaded!');
       }
       this.reloadFiles();
       this.showUploadFileDialog = false;
-      this._needsSave = true;
     };
     this.uploader.uploadAll();
   }
@@ -114,7 +122,6 @@ export class FileManagerComponent implements OnInit {
       text: '',
     });
     this.onFileClick(this.files[this.files.length - 1]);
-    this._needsSave = true;
     this.showNewFileDialog = false;
   }
 
@@ -129,14 +136,13 @@ export class FileManagerComponent implements OnInit {
       if (this.selectedFile) {
         this.notify.onTextChange(this.selectedFile.text);
       }
-    })
+    });
   }
 
   ngOnInit() {
     // listen to notify events
     this.notify.textChangeOb.subscribe(text => {
-      if (this.selectedFile && this.selectedFile.text !== text) {
-        this._needsSave = true;
+      if (this.selectedFile) {
         this.selectedFile.text = text;
       }
     });
@@ -147,10 +153,6 @@ export class FileManagerComponent implements OnInit {
       this.saveFiles();
       this.docName = newDocName;
       this.reloadFiles();
-    });
-
-    $(document).ready(function(){
-      $('.modal').modal();
     });
   }
 }
