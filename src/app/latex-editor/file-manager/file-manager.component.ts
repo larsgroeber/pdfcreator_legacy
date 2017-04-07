@@ -21,7 +21,7 @@ declare let $: any;
 const URL = Config.SERVER_URL + Config.ROOT_URL + 'api/upload';
 
 @Component({
-  selector: 'app-file-editor',
+  selector: 'app-file-manager',
   templateUrl: './file-manager.component.html',
   styleUrls: ['./file-manager.component.css']
 })
