@@ -1,12 +1,17 @@
-import {Component} from '@angular/core';
-import {DomSanitizer} from '@angular/platform-browser/src/security/dom_sanitization_service';
+import {Component, OnInit} from '@angular/core';
+
+declare let $: any;
 
 @Component({
-selector: 'app-root',
-templateUrl: './app.component.html',
-styleUrls: ['./app.component.css']
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-    constructor( private sanitizer: DomSanitizer ) {
-    }
+export class AppComponent implements OnInit {
+  constructor() {
+  }
+
+  ngOnInit(): void {
+    $("#side-nav-toggle").sideNav();
+  }
 }

@@ -10,7 +10,7 @@ import { Injectable } from '@angular/core';
 import {Subject} from "rxjs";
 
 @Injectable()
-export class NotifyService {
+export class LatexService {
 
   constructor() { }
 
@@ -36,6 +36,14 @@ export class NotifyService {
 
   onloadDoc(docName: string): void {
     this.loadDoc.next(docName);
+  }
+
+  // event where a new doc should be loaded
+  private loadTemplates = new Subject<string>();
+  loadTemplatesOb = this.loadTemplates.asObservable();
+
+  onloadTemplates(selectedDoc: string): void {
+    this.loadTemplates.next(selectedDoc);
   }
 
   // event where the current document should be compiled and rendered

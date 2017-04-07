@@ -1,0 +1,69 @@
+#side-nav-header {
+  width: 300px;
+  height: 123px;
+  background: url('../../assets/starker_start_logo.png') no-repeat;
+  background-size: 290px 123px;
+}
+
+#slide-out {
+  background-color: #fff;
+  height: 100%;
+}
+
+#slide-out a {
+  text-decoration: none !important;
+}
+
+#slide-out .active {
+  color: #F8AC00;
+}
+
+nav {
+  background-color: #F8AC00;
+}
+
+nav a {
+  color: white;
+  text-decoration: none !important;
+}
+
+.nav-wrapper {
+  padding-left: 10px;
+}
+
+#main-content {
+  padding: 10px;
+}
+
+.list-item-bottom {
+  vertical-align: bottom;
+}
+
+#side-nav-footer {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  height: 50px;
+  border-top: solid 1px #e0e0e0;
+}
+
+#side-nav-footer p {
+  color: rgba(0,0,0,0.3);
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 48px;
+  padding: 0 32px;
+  margin: 0;
+}
+
+#author-link {
+  color: rgba(0,0,0,0.3);
+}
+
+#alpha-plug {
+  position: absolute;
+  top: 5%;
+  font-family: "Helvetica Neue Light", "HelveticaNeue-Light", "Helvetica Neue", Calibri, Helvetica, Arial, sans-serif;
+  transform: rotate(15deg);
+}

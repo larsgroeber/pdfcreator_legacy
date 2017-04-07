@@ -1,27 +1,52 @@
+<div class="row" *ngIf="showCompiledPDF">
+  <div class="col xl4 l12 m12 s12">
+    <p *ngIf="!replacementKeys">No replacement keys found.</p>
+    <p *ngIf="replacementKeys">Found replacement keys:</p>
+    <ul class="collection">
+      <li class="collection-item" *ngFor="let key of replacementKeys">{{key}}</li>
+    </ul>
+  </div>
+  <div class="col xl8 l12 m12 s12">
+    <app-pdf-display [safeUri]="safeURL"></app-pdf-display>
+  </div>
+</div>
 <div>
-  <div class="alert alert-danger" *ngIf="error">{{error}}</div>
-  <div class="form-group">
-    <label for="docName">Choose a template:</label>
-    <select name="docName" [(ngModel)]="selectedDocName" id="docName" class="form-control">
-      <option *ngFor="let doc of documents" value="{{doc}}">{{doc}}</option>
-    </select>
-    <!--<input id="name" class="form-control" type="text" name="docName" [(ngModel)]="docName">-->
-  </div>
+  <app-template-select (templateSelected)="onTemplateChange($event)"></app-template-select>
   <div id="template-buttons">
-    <button class="btn btn-raised btn-primary" (click)="onLoadDoc()">Load</button>
-    <button class="btn btn-raised btn-primary" (click)="onDeleteDoc()">Delete</button>
-    <button class="btn btn-raised btn-primary" (click)="showNewDocDialog = !showNewDocDialog">Create New</button>
-    <button class="btn btn-raised btn-primary pull-right" *ngIf="currentDocName"
-            (click)="onCompilePDF()">Compile PDF</button><br>
+    <button class="btn btn-raised btn-primary btn-space" data-target="delete-doc-dialog"
+            *ngIf="currentDocName">Delete</button>
+    <button class="btn btn-raised btn-primary btn-space" data-target="new-doc-dialog">New</button>
+    <button class="btn btn-raised btn-primary right btn-space" *ngIf="currentDocName"
+            (click)="onCompilePDF()">Compile PDF</button>
   </div>
+</div>
+<!-- MODALS -->
+<div class="modal" id="delete-doc-dialog">
+  <div class="modal-content">
+    <p class="dialog-header">Are you sure you want to delete the template {{currentDocName}}?</p>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-flat modal-close left modal-action" (click)="onDeleteDoc()">Yes</button>
+    <button class="btn-flat left modal-close modal-action">No</button>
+  </div>
+</div>
 
-  <div class="form-group" id="new-doc-dialog" *ngIf="showNewDocDialog">
-    <label for="newName">Name des Templates</label>
-    <input id="newName" type="text" class="form-control" [(ngModel)]="selectedDocName">
-    <button class="btn btn-raised btn-success" style="margin-top: 5px" (click)="onCreateDoc()">Create</button>
+<div class="modal" id="new-doc-dialog">
+  <div class="modal-content">
+    <p class="dialog-header">Add an empty template:</p>
+    <div class="input-field">
+      <input id="newName" type="text" class="form-control" [(ngModel)]="newDocName">
+      <label for="newName">Name des Templates</label>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-flat modal-close left modal-action" (click)="onCreateDoc()">Create</button>
   </div>
 </div>
+
+<!-- EDITOR -->
 <div class="row" style="margin-top: 20px" [hidden]="!currentDocName">
-  <app-file-editor class="col-md-3"></app-file-editor>
-  <app-text-editor class="col-md-9" ngDefaultControl></app-text-editor>
+  <app-file-editor class="col xl3 l4 m4 s12"></app-file-editor>
+  <app-text-editor class="col xl9 l8 m8 s12" ngDefaultControl></app-text-editor>
 </div>
+<button href="#" class="btn-floating waves-effect scroll-to-top"><i class="material-icons">arrow_upward</i></button>

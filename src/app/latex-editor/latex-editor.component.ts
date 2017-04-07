@@ -7,8 +7,15 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {LatexService} from "../services/latex.service";
-import {NotifyService} from "../services/notify.service";
+import {APIService} from "../api.service";
+import {LatexService} from "./latex.service";
+import {Helper} from "../../include/helper";
+import {CompilerService} from "../compiler.service";
+import {SafeUrl, Title} from "@angular/platform-browser";
+
+import * as Config from '../../../config';
+
+declare let $: any;
 
 @Component({
   selector: 'app-latex-editor',
@@ -17,41 +24,65 @@ import {NotifyService} from "../services/notify.service";
 })
 
 export class LatexEditorComponent implements OnInit {
-  selectedDocName: string;
   currentDocName: string;
-  public documents: string[];
-  public showNewDocDialog: boolean = false;
+  public showNewDocDialog = false;
+  public showCompiledPDF = false;
+  public replacementKeys: string[];
+  public safeURL: SafeUrl;
+  public newDocName: string;
 
-  error: string;
+  constructor(private api: APIService
+    , private notify: LatexService
+    , private compiler: CompilerService
+    , private titleService: Title) {}
 
-  constructor(private latex: LatexService, private notify: NotifyService) {}
-
-  /**
-   * Gets called whenever the PDF view should be updated.
-   * Effectively tells file-manager to save all files and pdf-input to recompile the PDF.
-   */
   onCompilePDF(): void {
     this.onSavePDF();
-    this.notify.onCompilePDF(this.currentDocName);
+    this.api.getOneDoc(this.currentDocName).subscribe(data => {
+      let mainTex = data.find(f => f.name === 'main.tex');
+      if (!mainTex) {
+        Helper.displayMessage('Could not find main.tex', 0);
+        return;
+      }
+      this.showCompiledPDF = true;
+      this.replacementKeys = this.compiler.getKeys(mainTex.text);
+      this.compiler.compileLatex(this.currentDocName, mainTex.text, url => this.safeURL = url);
+    });
   }
 
   onSavePDF(): void {
-    this.notify.onSaveFiles(this.selectedDocName);
+    this.notify.onSaveFiles(this.currentDocName);
   }
 
   onLoadDoc(): void {
-    this.currentDocName = this.selectedDocName;
     this.notify.onloadDoc(this.currentDocName);
+    this.changeTitle();
+    this.showCompiledPDF = false;
+  }
+
+  onTemplateChange(template): void {
+    this.currentDocName = template;
+    this.changeTitle();
+    this.onLoadDoc();
+  }
+
+  changeTitle(): void {
+    if (this.currentDocName) {
+      this.titleService.setTitle(`${Config.APP_NAME} - edit: ${this.currentDocName}`);
+    } else {
+      this.titleService.setTitle(`${Config.APP_NAME} - edit`);
+    }
   }
 
   /**
    * Deletes a document.
    */
   onDeleteDoc(): void {
-    this.latex.deleteDoc(this.selectedDocName).subscribe(() => {}, err => this.showError(err));
-    this.selectedDocName = '';
-    this.currentDocName = '';
-    this.updateDocList();
+    this.api.deleteDoc(this.currentDocName).subscribe(() => {
+      this.notify.onloadTemplates('');
+      this.currentDocName = '';
+      this.changeTitle();
+    }, err => Helper.displayMessage(err, 0));
   }
 
   /**
@@ -59,22 +90,34 @@ export class LatexEditorComponent implements OnInit {
    */
   onCreateDoc(): void {
     this.showNewDocDialog = false;
-    this.latex.createNewDoc(this.selectedDocName).subscribe(() => {
+    this.api.createNewDoc(this.newDocName).subscribe(() => {
+      this.currentDocName = this.newDocName;
+      this.newDocName = '';
       this.onLoadDoc();
-      this.updateDocList();
-    }, err => this.showError(err));
+      this.notify.onloadTemplates(this.currentDocName);
+    }, err => Helper.displayMessage(err));
   }
 
-  updateDocList(): void {
-    this.latex.getAllDocs().subscribe(docs => this.documents = docs, err => this.showError(err));
-  }
-
-  showError(err: string): void {
-    this.error = err;
-    setTimeout(() => this.error = '', 10000);
-  }
 
   ngOnInit() {
-    this.updateDocList();
+    $(document).ready(function(){
+      $('.modal').modal();
+
+      $(window).scroll(() => {
+        // make it work in chrome and firefox
+        let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        if (scrollTop > 100) {
+          $('.scroll-to-top').fadeIn();
+        } else {
+          $('.scroll-to-top').fadeOut();
+        }
+      })
+      $(`.scroll-to-top`).click(() => {
+        $('html, body').animate({scrollTop: 0}, 800);
+        return false;
+      })
+    });
+
+    this.titleService.setTitle(`${Config.APP_NAME} - edit`);
   }
 }

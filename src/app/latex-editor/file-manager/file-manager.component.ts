@@ -3,18 +3,20 @@
  *
  * Displays a file manager and is responsible for saving and creating files.
  * TODO: display warning if user closes window
- * TODO: keep track of if files need to be saved
  *
  * @author Lars Gröber
  */
 
 import {Component, Input, OnInit} from '@angular/core';
-import {LatexService} from '../services/latex.service';
-import {NotifyService} from '../services/notify.service';
-import {FileUploader} from 'ng2-file-upload';
+import {APIService} from "../../api.service";
+import {LatexService} from "../latex.service";
+import {FileUploader} from "ng2-file-upload";
 
-import * as Config from '../../../config';
-import {mFile} from '../mfile';
+import * as Config from '../../../../config';
+import {mFile} from "../../mfile";
+import {Helper} from "../../../include/helper";
+
+declare let $: any;
 
 const URL = Config.SERVER_URL + Config.ROOT_URL + 'api/upload';
 
@@ -29,19 +31,22 @@ export class FileManagerComponent implements OnInit {
   private files: mFile[];
   private selectedFile: mFile = { name: '', text: ''};
 
+  private _needsSave = false;
+
   // info box
   public info: string;
-  public infoClass: string;
 
+  public infoClass: string;
   // new files
   public fileName: string;
   public uploader: FileUploader = new FileUploader({ url: URL });
+
   public showNewFileDialog = false;
   public showUploadFileDialog = false;
 
   @Input() docName: string;
 
-  constructor(private latex: LatexService, private notify: NotifyService) {
+  constructor(private latex: APIService, private notify: LatexService) {
   }
 
   /**
@@ -57,11 +62,14 @@ export class FileManagerComponent implements OnInit {
    * Is called whenever all files should be saved.
    */
   saveFiles(): void {
-    if (!this.files) return;
+    if (!this.files || !this._needsSave) return;
     console.log('Save files ' + this.docName);
     this.latex.updateDoc(this.docName, this.files).subscribe(files => {
-      this.showInfo('Files saved!');
-    }, err => this.showInfo(err, 'error'));
+      if (files) {
+        Helper.displayMessage('Files saved!');
+      }
+      this._needsSave = false;
+    }, err => Helper.displayMessage(err, 0));
   }
 
   /**
@@ -72,25 +80,8 @@ export class FileManagerComponent implements OnInit {
     if (index !== -1) {
       this.files.splice(index, 1);
       this.notify.onTextChange('');
+      this._needsSave = true;
     }
-  }
-
-  /**
-   * Helper function to display information in the info box.
-   * @param text
-   * @param logLevel
-   */
-  showInfo(text: string, logLevel?: string): void {
-    if (!logLevel) logLevel = 'log';
-    switch (logLevel) {
-      case 'log':
-        this.infoClass = 'alert-info';
-        break;
-      case 'error':
-        this.infoClass = 'alert-danger';
-    }
-    this.info = text;
-    setTimeout(() => { this.info = ''; }, 3000);
   }
 
   /**
@@ -103,12 +94,13 @@ export class FileManagerComponent implements OnInit {
     this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
       console.log('ImageUpload:uploaded:', item, status);
       if (status !== 200) {
-        this.showInfo('There was a problem uploading the file!', 'error');
+        Helper.displayMessage("There was a problem uploading the file!", 0);
       } else {
-        this.showInfo('File uploaded!');
+        Helper.displayMessage("File uploaded!");
       }
       this.reloadFiles();
       this.showUploadFileDialog = false;
+      this._needsSave = true;
     };
     this.uploader.uploadAll();
   }
@@ -122,6 +114,7 @@ export class FileManagerComponent implements OnInit {
       text: '',
     });
     this.onFileClick(this.files[this.files.length - 1]);
+    this._needsSave = true;
     this.showNewFileDialog = false;
   }
 
@@ -142,7 +135,8 @@ export class FileManagerComponent implements OnInit {
   ngOnInit() {
     // listen to notify events
     this.notify.textChangeOb.subscribe(text => {
-      if (this.selectedFile) {
+      if (this.selectedFile && this.selectedFile.text !== text) {
+        this._needsSave = true;
         this.selectedFile.text = text;
       }
     });
@@ -153,6 +147,10 @@ export class FileManagerComponent implements OnInit {
       this.saveFiles();
       this.docName = newDocName;
       this.reloadFiles();
+    });
+
+    $(document).ready(function(){
+      $('.modal').modal();
     });
   }
 }
