@@ -10,8 +10,8 @@ import {Component, OnInit} from '@angular/core';
 import {SafeUrl, Title} from '@angular/platform-browser';
 import * as _ from 'lodash';
 import {APIService} from "../api.service";
-import {mFile} from "../mfile";
-import {Replacement} from "../replacement";
+import {mFile} from "../interfaces/mfile";
+import {Replacement} from "../interfaces/replacement";
 import {Helper} from "../../include/helper";
 import {CompilerService} from "../compiler.service";
 

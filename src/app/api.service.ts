@@ -11,6 +11,7 @@ import {Http, Response} from "@angular/http";
 import {Observable} from "rxjs";
 import 'rxjs/add/operator/map';
 import * as Config from "../../config";
+import {TemplateI} from "../../server/interfaces/template";
 
 interface mFile {
   name: string,
@@ -26,7 +27,7 @@ export class APIService {
 
   ////// Methods for document CRUD system //////
 
-  getAllDocs(): Observable<string[]> {
+  getAllDocs(): Observable<TemplateI[]> {
     return this.http.get(URL + 'api/latex/get/all', {} )
       .map(res => res.json().documents)
       .catch(APIService.handleError);

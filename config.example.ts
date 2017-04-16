@@ -1,6 +1,9 @@
 
 export const APP_NAME = 'PDFCreator';
 
+////// DB //////
+export const MONGO_URL = 'mongodb://localhost/pdfcreator';
+
 ////// SERVER //////
 // URL to the main site
 export const SERVER_URL = 'http://localhost:4000';
@@ -25,4 +28,3 @@ export const CERTIFICATE = '';
 
 // Https Port
 export const PORT_SSL = 3001;
-

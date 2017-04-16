@@ -10,10 +10,13 @@ import express = require('express');
 import bodyParser = require('body-parser');
 import fs = require('fs-extra');
 import multer = require('multer');
+import async = require('async');
 
 let mime = require('mime-types');
 
 import * as Config from '../config';
+import {TemplateDB} from "./template.db";
+import {TemplateI} from "./interfaces/template";
 
 let router = express.Router();
 router.use(bodyParser.json());
@@ -84,16 +87,13 @@ interface File {
   name: string,
   text: string,
 }
-// Get all documents, returns a list of available document names.
+// Get all documents, returns a list of available templates in the db.
 router.get('/api/latex/get/all', (req, res) => {
-  fs.readdir(Config.DATA_PATH, (err, files) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send(err);
-      return;
-    }
+  TemplateDB.getAll((err, templates) => {
+    if (!handleErr(err, res)) return;
+    console.log(templates);
     res.send({
-      documents: files
+      documents: templates
     });
   });
 });
@@ -104,11 +104,8 @@ router.post('/api/latex/get/one', (req, res) => {
   let name = req.body.name;
   if (name) {
     fs.readdir(Config.DATA_PATH + name, (err, files) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send(err);
-        return;
-      }
+      if (!handleErr(err, res)) return;
+
       let docFiles: File[] = [];
       for (let f of files) {
         try {
@@ -139,27 +136,32 @@ router.post('/api/latex/get/one', (req, res) => {
 // Create a new document, returns an empty 'main.tex' file object.
 // Expects a 'name' parameter in body.
 router.post('/api/latex/create/one', (req, res) => {
-  console.log(req.body);
   let name = req.body.name;
   if (name) {
-    fs.mkdir(Config.DATA_PATH + name, (err) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send(err);
-        return;
-      }
-      fs.writeFile(Config.DATA_PATH + name + '/' + 'main.tex', '', (err) => {
-        if (err) {
-          console.error(err);
-          res.status(500).send(err);
-          return;
-        }
-
+    async.parallel([
+      callback => {
+        TemplateDB.save({
+          name: name,
+          desc: req.body.desc,
+          active: true,
+        }, callback);
+      },
+      callback => {
+        fs.mkdir(Config.DATA_PATH + name, (err) => {
+          if (err) callback(err);
+          fs.writeFile(Config.DATA_PATH + name + '/' + 'main.tex', '', (err) => {
+            callback(err, [{name: 'main.tex', text: ''}]);
+          });
+        });
+      }],
+      (err, results) => {
+        if (!handleErr(err, res)) return;
+        console.log(results);
         res.send({
-          files: [{name: 'main.tex', text: ''}],
+          template: results[0],
+          files: results[1],
         })
       });
-    });
   } else {
     console.log('Bad Request.');
     res.sendStatus(400);

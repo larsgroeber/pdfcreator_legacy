@@ -18,6 +18,9 @@ import * as Config from '../config';
 
 let app = express();
 
+import mongoose = require('mongoose');
+mongoose.connect(Config.MONGO_URL);
+
 // CORS middleware
 let allowCrossDomain = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -34,6 +37,8 @@ app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(Config.ROOT_URL_EXPRESS, express.static(path.join(__dirname, '../dist/')));
+
+
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'));

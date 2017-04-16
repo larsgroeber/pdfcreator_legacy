@@ -13,7 +13,7 @@ import {LatexService} from "../latex.service";
 import {FileUploader} from "ng2-file-upload";
 
 import * as Config from '../../../../config';
-import {mFile} from "../../mfile";
+import {mFile} from "../../interfaces/mfile";
 import {Helper} from "../../../include/helper";
 
 declare let $: any;
