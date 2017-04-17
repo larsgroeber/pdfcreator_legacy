@@ -15,6 +15,7 @@ import {FileUploader} from "ng2-file-upload";
 import * as Config from '../../../../config';
 import {mFile} from "../../interfaces/mfile";
 import {Helper} from "../../../include/helper";
+import {TemplateI} from "../../../../server/interfaces/template";
 
 declare let $: any;
 
@@ -36,7 +37,6 @@ export class FileManagerComponent implements OnInit {
   // info box
   public info: string;
 
-  public infoClass: string;
   // new files
   public fileName: string;
   public uploader: FileUploader = new FileUploader({ url: URL });
@@ -44,7 +44,7 @@ export class FileManagerComponent implements OnInit {
   public showNewFileDialog = false;
   public showUploadFileDialog = false;
 
-  @Input() docName: string;
+  @Input() template: TemplateI;
 
   constructor(private latex: APIService, private notify: LatexService) {
   }
@@ -63,8 +63,8 @@ export class FileManagerComponent implements OnInit {
    */
   saveFiles(): void {
     if (!this.files || !this._needsSave) return;
-    console.log('Save files ' + this.docName);
-    this.latex.updateDoc(this.docName, this.files).subscribe(files => {
+    console.log('Save files ' + this.template.name);
+    this.latex.updateDoc(this.template, this.files).subscribe(files => {
       if (files) {
         Helper.displayMessage('Files saved!');
       }
@@ -89,7 +89,7 @@ export class FileManagerComponent implements OnInit {
    */
   onFileUpload(): void {
     this.uploader.onBuildItemForm = (item, form) => {
-      form.append('name', this.docName);
+      form.append('name', this.template);
     };
     this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
       console.log('ImageUpload:uploaded:', item, status);
@@ -122,8 +122,8 @@ export class FileManagerComponent implements OnInit {
    * Fetches files from the server.
    */
   reloadFiles(): void {
-    console.log('Reload files ' + this.docName);
-    this.latex.getOneDoc(this.docName).subscribe((files) => {
+    console.log('Reload files ' + this.template.name);
+    this.latex.getOneDoc(this.template.name).subscribe((files) => {
       this.files = files;
       this.selectedFile = this.files.find(f => f.name === 'main.tex');
       if (this.selectedFile) {
@@ -145,8 +145,11 @@ export class FileManagerComponent implements OnInit {
     });
     this.notify.loadDocOb.subscribe(newDocName => {
       this.saveFiles();
-      this.docName = newDocName;
+      this.template = newDocName;
       this.reloadFiles();
+    });
+    this.notify.descriptionChangedOb.subscribe(() => {
+      this._needsSave = true;
     });
 
     $(document).ready(function(){

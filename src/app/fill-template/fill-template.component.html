@@ -1,4 +1,7 @@
 <app-template-select (templateSelected)="onTemplateChange($event)"></app-template-select>
+<div *ngIf="template && template.desc">
+  <p>Description: {{template.desc}}</p>
+</div>
 <div class="row">
   <div class="col xl4 l12 m12 s12" style="margin-bottom: 10px">
     <div *ngIf="_docName">

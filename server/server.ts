@@ -21,6 +21,7 @@ let app = express();
 import mongoose = require('mongoose');
 mongoose.connect(Config.MONGO_URL);
 
+
 // CORS middleware
 let allowCrossDomain = function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');

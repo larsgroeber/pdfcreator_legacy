@@ -28,31 +28,31 @@ export class APIService {
   ////// Methods for document CRUD system //////
 
   getAllDocs(): Observable<TemplateI[]> {
-    return this.http.get(URL + 'api/latex/get/all', {} )
-      .map(res => res.json().documents)
+    return this.http.get(URL + 'api/template/get_all', {} )
+      .map(res => res.json().templates)
       .catch(APIService.handleError);
   }
 
   getOneDoc(docName: string): Observable<mFile[]> {
-    return this.http.post(URL + 'api/latex/get/one', { name: docName } )
+    return this.http.post(URL + 'api/template/get', { name: docName } )
       .map(res => res.json().files)
       .catch(APIService.handleError);
   }
 
-  createNewDoc(docName: string): Observable<string> {
-    return this.http.post(URL + 'api/latex/create/one', { name: docName } )
-      .map(res => res.text())
+  createNewDoc(docName: string): Observable<{ template: TemplateI, files: mFile[] }> {
+    return this.http.post(URL + 'api/template/create', { name: docName } )
+      .map(res => res.json())
       .catch(APIService.handleError);
   }
 
-  updateDoc(docName: string, files: mFile[]): Observable<mFile[]> {
-    return this.http.post(URL + 'api/latex/update/one', { name: docName, files: files } )
-      .map(res => res.json().files)
+  updateDoc(template: TemplateI, files: mFile[]): Observable<{ template: TemplateI, files: mFile[] }> {
+    return this.http.post(URL + 'api/template/update', { template: template, files: files } )
+      .map(res => res.json())
       .catch(APIService.handleError);
   }
 
-  deleteDoc(docName: string): Observable<string> {
-    return this.http.post(URL + 'api/latex/delete/one', { name: docName } )
+  deleteDoc(template: TemplateI): Observable<string> {
+    return this.http.post(URL + 'api/template/delete', { template: template } )
       .map(res => res.text())
       .catch(APIService.handleError);
   }
@@ -71,7 +71,7 @@ export class APIService {
     if (error instanceof Response) {
       const body = error.json() || '';
       const err = body.error || JSON.stringify(body);
-      errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
+      errMsg = `${err}`;
     } else {
       errMsg = error.message ? error.message : error.toString();
     }

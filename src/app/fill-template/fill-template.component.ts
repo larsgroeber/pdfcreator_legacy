@@ -16,6 +16,7 @@ import {Helper} from "../../include/helper";
 import {CompilerService} from "../compiler.service";
 
 import * as Config from '../../../config';
+import {TemplateI} from "../../../server/interfaces/template";
 
 
 @Component({
@@ -33,7 +34,8 @@ export class FillTemplateComponent implements OnInit {
    * Untouched main.tex file.
    */
   private _mainTex: mFile;
-  private _docName: string;
+  private templateName: string;
+  private template: TemplateI;
 
   constructor(private api: APIService
     , private compiler: CompilerService
@@ -54,7 +56,7 @@ export class FillTemplateComponent implements OnInit {
    * Generates inputs and updates PDF view.
    */
   onUpdatePDF(): void {
-    this.api.getOneDoc(this._docName).subscribe(data => {
+    this.api.getOneDoc(this.templateName).subscribe(data => {
       this._mainTex = data.find(f => f.name === 'main.tex');
       if (!this._mainTex) {
         Helper.displayMessage('Could not find main.tex!', 0);
@@ -70,9 +72,10 @@ export class FillTemplateComponent implements OnInit {
     });
   }
 
-  onTemplateChange(template): void {
-    this._docName = template;
-    this.titleService.setTitle(`${Config.APP_NAME} - ${this._docName}`);
+  onTemplateChange(template: TemplateI): void {
+    this.template = template;
+    this.templateName = template.name;
+    this.titleService.setTitle(`${Config.APP_NAME} - ${this.templateName}`);
     this.onUpdatePDF();
   }
 
@@ -81,7 +84,7 @@ export class FillTemplateComponent implements OnInit {
    */
   genPDF(values?: Object): void {
     if (!values) values = {};
-    this.compiler.replaceAndCompile(this._docName, this._mainTex.text, values
+    this.compiler.replaceAndCompile(this.templateName, this._mainTex.text, values
       , url => this.safeUri = url);
   }
 

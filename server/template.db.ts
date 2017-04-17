@@ -17,11 +17,11 @@ export class TemplateDB {
   static save(newTemplate: TemplateI, callback: (err: any, template: TemplateI) => void) {
     let newTemplateModel = new TemplateModel(newTemplate);
     newTemplateModel.save(err => {
-      callback(err, newTemplate);
+      callback(err, newTemplateModel);
     })
   }
 
-  static change(oldTemplate, callback: (err: any) => void) {
+  static change(oldTemplate, callback: (err: any, template: TemplateI) => void) {
     TemplateModel.findOne({_id: oldTemplate._id}, (err, template) => {
       if (template) {
         template.name = oldTemplate.name;
@@ -29,10 +29,10 @@ export class TemplateDB {
         template.active = oldTemplate.active;
 
         template.save(err => {
-          callback(err);
+          callback(err, oldTemplate);
         })
       } else {
-        callback('Could not find template!');
+        callback('Could not find template!', undefined);
       }
     })
   }

@@ -26,9 +26,10 @@ export class TemplateSelectComponent implements OnInit, AfterViewInit {
 
   constructor(private latex: APIService, private notify: LatexService) { }
 
-  onSelect(template: TemplateI): void {
-    if (template) {
-      this.templateSelected.emit(template);
+  onSelect(templateName: string): void {
+    if (templateName) {
+      let selectedTemplate: TemplateI = this.templates.find(t => t.name === templateName);
+      this.templateSelected.emit(selectedTemplate);
     }
   }
 
