@@ -1,7 +1,10 @@
 <div class="template-select-component input-field" #select>
   <select name="template" id="template-select-select">
     <option value="" disabled selected>Choose a template</option>
-    <option *ngFor="let template of templates" value="{{template.name}}">{{template.name}}</option>
+    <option *ngFor="let template of templatesActive" value="{{template.name}}">{{template.name}}</option>
+    <optgroup label="Inactive" *ngIf="!showOnlyActive && templatesInactive && templatesInactive.length > 0">
+      <option *ngFor="let template of templatesInactive" value="{{template.name}}">{{template.name}}</option>
+    </optgroup>
   </select>
   <label>Template:</label>
 </div>

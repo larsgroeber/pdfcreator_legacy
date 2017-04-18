@@ -1,4 +1,4 @@
-<app-template-select (templateSelected)="onTemplateChange($event)"></app-template-select>
+<app-template-select [showOnlyActive]="true" (templateSelected)="onTemplateChange($event)"></app-template-select>
 <div *ngIf="template">
   <div *ngIf="template.desc">
     <div class="card">
