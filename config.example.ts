@@ -1,7 +1,9 @@
 
 export const APP_NAME = 'PDFCreator';
+export const APP_VERSION = 'v0.2.0';
 
 ////// DB //////
+// URL to your mongodb installation including login data
 export const MONGO_URL = 'mongodb://localhost/pdfcreator';
 
 ////// SERVER //////
