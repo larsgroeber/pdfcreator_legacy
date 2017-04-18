@@ -8,21 +8,22 @@
 
 import { Injectable } from '@angular/core';
 import {Subject} from "rxjs";
+import {TemplateI} from "../../../server/interfaces/template";
 
 @Injectable()
 export class LatexService {
 
   constructor() { }
 
-  // event where all files should be saved
-  private saveFiles = new Subject<string>();
+  // event when all files should be saved
+  private saveFiles = new Subject<TemplateI>();
   saveFilesOb = this.saveFiles.asObservable();
 
-  onSaveFiles(docName: string): void {
+  onSaveFiles(docName: TemplateI): void {
     this.saveFiles.next(docName);
   }
 
-  // event where the text of the current file has changed
+  // event when the text of the current file has changed
   private textChange = new Subject<string>();
   textChangeOb = this.textChange.asObservable();
 
@@ -30,23 +31,31 @@ export class LatexService {
     this.textChange.next(text);
   }
 
-  // event where a new doc should be loaded
-  private loadDoc = new Subject<string>();
+  // event when the text of the current file has changed
+  private descriptionChanged = new Subject();
+  descriptionChangedOb = this.descriptionChanged.asObservable();
+
+  onDescriptionChanged(): void {
+    this.descriptionChanged.next();
+  }
+
+  // event when a new doc should be loaded
+  private loadDoc = new Subject<TemplateI>();
   loadDocOb = this.loadDoc.asObservable();
 
-  onloadDoc(docName: string): void {
+  onLoadDoc(docName: TemplateI): void {
     this.loadDoc.next(docName);
   }
 
-  // event where a new doc should be loaded
+  // event when the template select should be reloaded
   private loadTemplates = new Subject<string>();
   loadTemplatesOb = this.loadTemplates.asObservable();
 
-  onloadTemplates(selectedDoc: string): void {
+  onLoadTemplates(selectedDoc: string): void {
     this.loadTemplates.next(selectedDoc);
   }
 
-  // event where the current document should be compiled and rendered
+  // event when the current document should be compiled and rendered
   private compilePDF = new Subject<string>();
   compilePDFOb = this.compilePDF.asObservable();
 

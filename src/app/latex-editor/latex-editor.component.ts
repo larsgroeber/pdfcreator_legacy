@@ -14,6 +14,7 @@ import {CompilerService} from "../compiler.service";
 import {SafeUrl, Title} from "@angular/platform-browser";
 
 import * as Config from '../../../config';
+import {TemplateI} from "../../../server/interfaces/template";
 
 declare let $: any;
 
@@ -24,7 +25,7 @@ declare let $: any;
 })
 
 export class LatexEditorComponent implements OnInit {
-  currentDocName: string;
+  public currentTemplate: TemplateI;
   public showNewDocDialog = false;
   public showCompiledPDF = false;
   public replacementKeys: string[];
@@ -38,7 +39,7 @@ export class LatexEditorComponent implements OnInit {
 
   onCompilePDF(): void {
     this.onSavePDF();
-    this.api.getOneDoc(this.currentDocName).subscribe(data => {
+    this.api.getOneDoc(this.currentTemplate.name).subscribe(data => {
       let mainTex = data.find(f => f.name === 'main.tex');
       if (!mainTex) {
         Helper.displayMessage('Could not find main.tex', 0);
@@ -46,29 +47,37 @@ export class LatexEditorComponent implements OnInit {
       }
       this.showCompiledPDF = true;
       this.replacementKeys = this.compiler.getKeys(mainTex.text);
-      this.compiler.compileLatex(this.currentDocName, mainTex.text, url => this.safeURL = url);
+      this.compiler.compileLatex(this.currentTemplate.name, mainTex.text, url => this.safeURL = url);
     });
   }
 
   onSavePDF(): void {
-    this.notify.onSaveFiles(this.currentDocName);
+    this.notify.onSaveFiles(this.currentTemplate);
   }
 
   onLoadDoc(): void {
-    this.notify.onloadDoc(this.currentDocName);
+    this.notify.onLoadDoc(this.currentTemplate);
     this.changeTitle();
     this.showCompiledPDF = false;
   }
 
-  onTemplateChange(template): void {
-    this.currentDocName = template;
+  onTemplateChange(template: TemplateI): void {
+    this.currentTemplate = template;
     this.changeTitle();
     this.onLoadDoc();
   }
 
+  onLoadDocComplete(): void {
+    $('#description').trigger('autoresize');
+  }
+
+  onDescriptionChange(): void {
+    this.notify.onDescriptionChanged();
+  }
+
   changeTitle(): void {
-    if (this.currentDocName) {
-      this.titleService.setTitle(`${Config.APP_NAME} - edit: ${this.currentDocName}`);
+    if (this.currentTemplate) {
+      this.titleService.setTitle(`${Config.APP_NAME} - edit: ${this.currentTemplate}`);
     } else {
       this.titleService.setTitle(`${Config.APP_NAME} - edit`);
     }
@@ -78,9 +87,9 @@ export class LatexEditorComponent implements OnInit {
    * Deletes a document.
    */
   onDeleteDoc(): void {
-    this.api.deleteDoc(this.currentDocName).subscribe(() => {
-      this.notify.onloadTemplates('');
-      this.currentDocName = '';
+    this.api.deleteDoc(this.currentTemplate).subscribe(() => {
+      this.notify.onLoadTemplates('');
+      this.currentTemplate = undefined;
       this.changeTitle();
     }, err => Helper.displayMessage(err, 0));
   }
@@ -90,16 +99,16 @@ export class LatexEditorComponent implements OnInit {
    */
   onCreateDoc(): void {
     this.showNewDocDialog = false;
-    this.api.createNewDoc(this.newDocName).subscribe(() => {
-      this.currentDocName = this.newDocName;
+    this.api.createNewDoc(this.newDocName).subscribe(res => {
+      this.currentTemplate = res.template;
       this.newDocName = '';
       this.onLoadDoc();
-      this.notify.onloadTemplates(this.currentDocName);
-    }, err => Helper.displayMessage(err));
+      this.notify.onLoadTemplates(this.currentTemplate.name);
+    }, err => Helper.displayMessage(err, 0));
   }
 
-
   ngOnInit() {
+    // scroll to top button
     $(document).ready(function(){
       $('.modal').modal();
 

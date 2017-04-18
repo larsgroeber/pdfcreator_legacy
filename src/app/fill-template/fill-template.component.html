@@ -1,23 +1,73 @@
 <app-template-select (templateSelected)="onTemplateChange($event)"></app-template-select>
-<div class="row">
-  <div class="col xl4 l12 m12 s12" style="margin-bottom: 10px">
-    <div *ngIf="_docName">
-      <div *ngIf="keys && keys.length > 0">
-        <p>Placeholders:</p>
-        <div class="input-field" *ngFor="let key of keys">
-          <label for="{{key.name}}">{{key.name}}</label>
-          <input id="{{key.name}}" name="{{key.name}}" type="text"
-                 [(ngModel)]="key.value">
-        </div>
+<div *ngIf="template">
+  <div *ngIf="template.desc">
+    <div class="card">
+      <div class="card-content">
+        <p>{{template.desc}}</p>
       </div>
-      <p *ngIf="! keys || keys.length == 0">No replacement keys found.</p>
-
-      <a [href]="safeUri" download="{{_docName}}.pdf" class="btn btn-primary" (click)="downloadPDF()">Download</a>
-      <button class="btn btn-primary right" (click)="onUpdateInput()">Update</button>
     </div>
   </div>
-  <div class="col xl8 l12 m12 s12">
-    <app-pdf-display [safeUri]="safeUri"></app-pdf-display>
+
+  <div id="pdf-layout-btns">
+    <button id="view-tab-btn" class="btn-flat btn-floating tooltipped"
+            data-position="top" data-delay="50" data-tooltip="Toggle between column and tab view."
+            [class.tab-toggled]="viewTabs" (click)="toggleViewTabs()"><i class="material-icons">
+      tab</i></button>
+  </div>
+
+  <div id="pdf-view-tabs" *ngIf="viewTabs">
+    <div class="row">
+      <div class="col s12">
+        <ul class="tabs" id="pdf-tabs">
+          <li class="tab col s3"><a class="active" href="#pdf">PDF</a></li>
+          <li class="tab col s3"><a href="#placeholders">Placeholders</a></li>
+        </ul>
+      </div>
+      <div id="pdf" class="col s12">
+        <app-pdf-display [safeUri]="safeUri"></app-pdf-display>
+      </div>
+      <div id="placeholders" class="col s12">
+        <div *ngIf="templateName">
+          <div *ngIf="keys && keys.length > 0">
+            <p>Placeholders:</p>
+            <div class="input-field" *ngFor="let key of keys">
+              <label for="{{key.name}}">{{key.name}}</label>
+              <input id="{{key.name}}" name="{{key.name}}" type="text"
+                     [(ngModel)]="key.value">
+            </div>
+          </div>
+          <p *ngIf="! keys || keys.length == 0">No replacement keys found.</p>
+
+          <a [href]="safeUri" download="{{templateName}}.pdf" class="btn btn-primary" (click)="downloadPDF()">Download</a>
+          <button class="btn btn-primary right" (click)="onUpdateInput()">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="pdf-view-single" *ngIf="!viewTabs">
+    <div class="row">
+      <div class="col xl4 l12 m12 s12" style="margin-bottom: 10px">
+        <div *ngIf="templateName">
+          <div *ngIf="keys && keys.length > 0">
+            <p>Placeholders:</p>
+            <div class="input-field" *ngFor="let key of keys">
+              <label for="{{key.name}}">{{key.name}}</label>
+              <input id="{{key.name}}" name="{{key.name}}" type="text"
+                     [(ngModel)]="key.value">
+            </div>
+          </div>
+          <p *ngIf="! keys || keys.length == 0">No replacement keys found.</p>
+
+          <a [href]="safeUri" download="{{templateName}}.pdf" class="btn btn-primary" (click)="downloadPDF()">Download</a>
+          <button class="btn btn-primary right" (click)="onUpdateInput()">Update</button>
+        </div>
+      </div>
+      <div class="col xl8 l12 m12 s12">
+        <app-pdf-display [safeUri]="safeUri"></app-pdf-display>
+      </div>
+    </div>
   </div>
 </div>
-<div class="alert alert-danger" *ngIf="error">{{error}}</div>
+
+

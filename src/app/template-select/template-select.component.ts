@@ -8,6 +8,7 @@ import {AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, View
 import {APIService} from "../api.service";
 import {Helper} from "../../include/helper";
 import {LatexService} from "../latex-editor/latex.service";
+import {TemplateI} from "../../../server/interfaces/template";
 
 declare let $: any;
 
@@ -17,26 +18,27 @@ declare let $: any;
   styleUrls: ['./template-select.component.css']
 })
 export class TemplateSelectComponent implements OnInit, AfterViewInit {
-  public templates: string[];
+  public templates: TemplateI[];
 
   @ViewChild('select') select: ElementRef;
 
-  @Output() templateSelected: EventEmitter<string> = new EventEmitter<string>();
+  @Output() templateSelected: EventEmitter<TemplateI> = new EventEmitter<TemplateI>();
 
   constructor(private latex: APIService, private notify: LatexService) { }
 
-  onSelect(template: string): void {
-    if (template) {
-      this.templateSelected.emit(template);
+  onSelect(templateName: string): void {
+    if (templateName) {
+      let selectedTemplate: TemplateI = this.templates.find(t => t.name === templateName);
+      this.templateSelected.emit(selectedTemplate);
     }
   }
 
-  reloadTemplates(selected: string): void {
+  reloadTemplates(selectedName: string): void {
     this.latex.getAllDocs().subscribe(docs => {
-        console.log(selected);
+        console.log(selectedName);
         this.templates = docs;
         $(document).ready(() => {
-          $('select').val(selected);
+          $('select').val(selectedName);
           $('select').material_select();
         });
       },

@@ -1,3 +1,4 @@
+<!-- COMPILER -->
 <div class="row" *ngIf="showCompiledPDF">
   <div class="col xl4 l12 m12 s12">
     <p *ngIf="!replacementKeys">No replacement keys found.</p>
@@ -10,27 +11,29 @@
     <app-pdf-display [safeUri]="safeURL"></app-pdf-display>
   </div>
 </div>
+
+<!-- SELECT -->
 <div>
   <app-template-select (templateSelected)="onTemplateChange($event)"></app-template-select>
   <div id="template-buttons">
     <button class="btn btn-raised btn-primary btn-space" data-target="delete-doc-dialog"
-            *ngIf="currentDocName">Delete</button>
+            *ngIf="currentTemplate">Delete</button>
     <button class="btn btn-raised btn-primary btn-space" data-target="new-doc-dialog">New</button>
-    <button class="btn btn-raised btn-primary right btn-space" *ngIf="currentDocName"
+    <button class="btn btn-raised btn-primary right btn-space" *ngIf="currentTemplate"
             (click)="onCompilePDF()">Compile PDF</button>
   </div>
 </div>
+
 <!-- MODALS -->
 <div class="modal" id="delete-doc-dialog">
   <div class="modal-content">
-    <p class="dialog-header">Are you sure you want to delete the template {{currentDocName}}?</p>
+    <p class="dialog-header">Are you sure you want to delete the template {{currentTemplate}}?</p>
   </div>
   <div class="modal-footer">
     <button class="btn-flat modal-close left modal-action" (click)="onDeleteDoc()">Yes</button>
     <button class="btn-flat left modal-close modal-action">No</button>
   </div>
 </div>
-
 <div class="modal" id="new-doc-dialog">
   <div class="modal-content">
     <p class="dialog-header">Add an empty template:</p>
@@ -45,8 +48,14 @@
 </div>
 
 <!-- EDITOR -->
-<div class="row" style="margin-top: 20px" [hidden]="!currentDocName">
-  <app-file-manager class="col xl3 l4 m4 s12"></app-file-manager>
+<div class="row" style="margin-top: 20px" [hidden]="!currentTemplate">
+  <div class="input-field" *ngIf="currentTemplate">
+    <textarea id="description" [(ngModel)]="currentTemplate.desc" (keyup)="onDescriptionChange()"
+              class="materialize-textarea"></textarea>
+    <label for="description">Description:</label>
+  </div>
+  <app-file-manager (onTemplateLoadComplete)="onLoadDocComplete()"
+                    class="col xl3 l4 m4 s12"></app-file-manager>
   <app-text-editor class="col xl9 l8 m8 s12" ngDefaultControl></app-text-editor>
 </div>
 <button href="#" class="btn-floating waves-effect scroll-to-top"><i class="material-icons">arrow_upward</i></button>

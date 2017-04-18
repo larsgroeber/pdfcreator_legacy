@@ -10,12 +10,15 @@ import {Component, OnInit} from '@angular/core';
 import {SafeUrl, Title} from '@angular/platform-browser';
 import * as _ from 'lodash';
 import {APIService} from "../api.service";
-import {mFile} from "../mfile";
-import {Replacement} from "../replacement";
+import {mFile} from "../interfaces/mfile";
+import {Replacement} from "../interfaces/replacement";
 import {Helper} from "../../include/helper";
 import {CompilerService} from "../compiler.service";
 
 import * as Config from '../../../config';
+import {TemplateI} from "../../../server/interfaces/template";
+
+declare let $: any;
 
 
 @Component({
@@ -28,12 +31,14 @@ export class FillTemplateComponent implements OnInit {
   public safeUri: SafeUrl;
   public keys: Replacement[];
   public error: string;
+  public viewTabs = false;
 
   /**
    * Untouched main.tex file.
    */
   private _mainTex: mFile;
-  private _docName: string;
+  private templateName: string;
+  private template: TemplateI;
 
   constructor(private api: APIService
     , private compiler: CompilerService
@@ -54,7 +59,7 @@ export class FillTemplateComponent implements OnInit {
    * Generates inputs and updates PDF view.
    */
   onUpdatePDF(): void {
-    this.api.getOneDoc(this._docName).subscribe(data => {
+    this.api.getOneDoc(this.templateName).subscribe(data => {
       this._mainTex = data.find(f => f.name === 'main.tex');
       if (!this._mainTex) {
         Helper.displayMessage('Could not find main.tex!', 0);
@@ -70,10 +75,23 @@ export class FillTemplateComponent implements OnInit {
     });
   }
 
-  onTemplateChange(template): void {
-    this._docName = template;
-    this.titleService.setTitle(`${Config.APP_NAME} - ${this._docName}`);
+  onTemplateChange(template: TemplateI): void {
+    this.template = template;
+    this.templateName = template.name;
+    this.titleService.setTitle(`${Config.APP_NAME} - ${this.templateName}`);
     this.onUpdatePDF();
+    $(document).ready(function(){
+      $('.tooltipped').tooltip({delay: 50});
+    });
+  }
+
+  toggleViewTabs(): void {
+    this.viewTabs = !this.viewTabs;
+    if (this.viewTabs) {
+      $(document).ready(function(){
+        $('ul.tabs').tabs();
+      });
+    }
   }
 
   /**
@@ -81,7 +99,7 @@ export class FillTemplateComponent implements OnInit {
    */
   genPDF(values?: Object): void {
     if (!values) values = {};
-    this.compiler.replaceAndCompile(this._docName, this._mainTex.text, values
+    this.compiler.replaceAndCompile(this.templateName, this._mainTex.text, values
       , url => this.safeUri = url);
   }
 
