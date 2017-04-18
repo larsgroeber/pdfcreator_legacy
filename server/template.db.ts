@@ -22,7 +22,7 @@ export class TemplateDB {
   }
 
   static change(oldTemplate, callback: (err: any, template: TemplateI) => void) {
-    TemplateModel.findOne({id: oldTemplate.id}, (err, template) => {
+    TemplateModel.findOne({_id: oldTemplate._id}, (err, template) => {
       if (template) {
         template.name = oldTemplate.name;
         template.desc = oldTemplate.desc;
@@ -38,7 +38,7 @@ export class TemplateDB {
   }
 
   static remove(oldTemplate, callback: (err: any) => void) {
-    TemplateModel.remove({id: oldTemplate.id }, err => {
+    TemplateModel.remove({_id: oldTemplate._id }, err => {
       callback(err);
     })
   }

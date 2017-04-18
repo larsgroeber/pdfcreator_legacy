@@ -28,6 +28,7 @@ export class LatexEditorComponent implements OnInit {
   public currentTemplate: TemplateI;
   public showNewDocDialog = false;
   public showCompiledPDF = false;
+  public showMoreOptions = false;
   public replacementKeys: string[];
   public safeURL: SafeUrl;
   public newDocName: string;
@@ -69,9 +70,12 @@ export class LatexEditorComponent implements OnInit {
 
   onLoadDocComplete(): void {
     $('#description').trigger('autoresize');
+    $(document).ready(function(){
+      $('.tooltipped').tooltip({delay: 50});
+    });
   }
 
-  onDescriptionChange(): void {
+  onTemplateInfoChange(): void {
     this.notify.onDescriptionChanged();
   }
 

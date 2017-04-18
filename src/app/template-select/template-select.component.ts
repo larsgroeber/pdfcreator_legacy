@@ -4,11 +4,12 @@
  * @author Lars Gröber
  */
 
-import {AfterViewInit, Component, ElementRef, EventEmitter, OnInit, Output, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {APIService} from "../api.service";
 import {Helper} from "../../include/helper";
 import {LatexService} from "../latex-editor/latex.service";
 import {TemplateI} from "../../../server/interfaces/template";
+import {showWarningOnce} from "tslint/lib/error";
 
 declare let $: any;
 
@@ -19,10 +20,14 @@ declare let $: any;
 })
 export class TemplateSelectComponent implements OnInit, AfterViewInit {
   public templates: TemplateI[];
+  public templatesActive: TemplateI[];
+  public templatesInactive: TemplateI[];
 
   @ViewChild('select') select: ElementRef;
 
   @Output() templateSelected: EventEmitter<TemplateI> = new EventEmitter<TemplateI>();
+
+  @Input() showOnlyActive: boolean = false;
 
   constructor(private latex: APIService, private notify: LatexService) { }
 
@@ -35,8 +40,9 @@ export class TemplateSelectComponent implements OnInit, AfterViewInit {
 
   reloadTemplates(selectedName: string): void {
     this.latex.getAllDocs().subscribe(docs => {
-        console.log(selectedName);
         this.templates = docs;
+        this.templatesActive = this.templates.filter(t => t.active);
+        this.templatesInactive = this.templates.filter(t => !t.active);
         $(document).ready(() => {
           $('select').val(selectedName);
           $('select').material_select();

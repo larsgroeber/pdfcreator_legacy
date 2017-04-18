@@ -179,6 +179,7 @@ router.post('/api/template/create', (req, res) => {
 // Expects the template to delete in body.
 router.post('/api/template/delete', (req, res) => {
   let template: TemplateI = req.body.template;
+  console.log("Delete: ", template);
   if (template) {
     async.parallel([
         callback => { // delete from db
@@ -256,7 +257,9 @@ router.post('/api/template/update', (req, res) => {
 function handleErr(err, res): boolean {
   if (err) {
     console.error(err);
-    res.status(500).send(err);
+    res.status(500).send({
+      error: err
+    });
     return false;
   }
   return true;
