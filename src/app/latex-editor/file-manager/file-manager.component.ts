@@ -7,7 +7,7 @@
  * @author Lars Gröber
  */
 
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {APIService} from "../../api.service";
 import {LatexService} from "../latex.service";
 import {FileUploader} from "ng2-file-upload";
@@ -45,6 +45,8 @@ export class FileManagerComponent implements OnInit {
   public showUploadFileDialog = false;
 
   @Input() template: TemplateI;
+
+  @Output() onTemplateLoadComplete: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private latex: APIService, private notify: LatexService) {
   }
@@ -129,6 +131,7 @@ export class FileManagerComponent implements OnInit {
       if (this.selectedFile) {
         this.notify.onTextChange(this.selectedFile.text);
       }
+      this.onTemplateLoadComplete.emit();
     });
   }
 

@@ -54,7 +54,8 @@
               class="materialize-textarea"></textarea>
     <label for="description">Description:</label>
   </div>
-  <app-file-manager class="col xl3 l4 m4 s12"></app-file-manager>
+  <app-file-manager (onTemplateLoadComplete)="onLoadDocComplete()"
+                    class="col xl3 l4 m4 s12"></app-file-manager>
   <app-text-editor class="col xl9 l8 m8 s12" ngDefaultControl></app-text-editor>
 </div>
 <button href="#" class="btn-floating waves-effect scroll-to-top"><i class="material-icons">arrow_upward</i></button>

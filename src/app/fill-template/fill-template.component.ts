@@ -18,6 +18,8 @@ import {CompilerService} from "../compiler.service";
 import * as Config from '../../../config';
 import {TemplateI} from "../../../server/interfaces/template";
 
+declare let $: any;
+
 
 @Component({
   selector: 'app-fill-template',
@@ -29,6 +31,7 @@ export class FillTemplateComponent implements OnInit {
   public safeUri: SafeUrl;
   public keys: Replacement[];
   public error: string;
+  public viewTabs = false;
 
   /**
    * Untouched main.tex file.
@@ -77,6 +80,18 @@ export class FillTemplateComponent implements OnInit {
     this.templateName = template.name;
     this.titleService.setTitle(`${Config.APP_NAME} - ${this.templateName}`);
     this.onUpdatePDF();
+    $(document).ready(function(){
+      $('.tooltipped').tooltip({delay: 50});
+    });
+  }
+
+  toggleViewTabs(): void {
+    this.viewTabs = !this.viewTabs;
+    if (this.viewTabs) {
+      $(document).ready(function(){
+        $('ul.tabs').tabs();
+      });
+    }
   }
 
   /**

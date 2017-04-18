@@ -13,14 +13,16 @@ import bodyParser = require('body-parser');
 import router = require('./router');
 import fs = require('fs');
 import https = require('https');
+import mongoose = require('mongoose');
+import * as assert from "assert";
 
 import * as Config from '../config';
 
 let app = express();
 
-import mongoose = require('mongoose');
 mongoose.connect(Config.MONGO_URL);
-
+global.Promise = require("q").Promise;
+mongoose.Promise = global.Promise;
 
 // CORS middleware
 let allowCrossDomain = function(req, res, next) {

@@ -56,7 +56,7 @@ export class LatexEditorComponent implements OnInit {
   }
 
   onLoadDoc(): void {
-    this.notify.onloadDoc(this.currentTemplate);
+    this.notify.onLoadDoc(this.currentTemplate);
     this.changeTitle();
     this.showCompiledPDF = false;
   }
@@ -67,8 +67,12 @@ export class LatexEditorComponent implements OnInit {
     this.onLoadDoc();
   }
 
+  onLoadDocComplete(): void {
+    $('#description').trigger('autoresize');
+  }
+
   onDescriptionChange(): void {
-    this.notify.ondescriptionChanged();
+    this.notify.onDescriptionChanged();
   }
 
   changeTitle(): void {
@@ -84,7 +88,7 @@ export class LatexEditorComponent implements OnInit {
    */
   onDeleteDoc(): void {
     this.api.deleteDoc(this.currentTemplate).subscribe(() => {
-      this.notify.onloadTemplates('');
+      this.notify.onLoadTemplates('');
       this.currentTemplate = undefined;
       this.changeTitle();
     }, err => Helper.displayMessage(err, 0));
@@ -99,11 +103,12 @@ export class LatexEditorComponent implements OnInit {
       this.currentTemplate = res.template;
       this.newDocName = '';
       this.onLoadDoc();
-      this.notify.onloadTemplates(this.currentTemplate.name);
+      this.notify.onLoadTemplates(this.currentTemplate.name);
     }, err => Helper.displayMessage(err, 0));
   }
 
   ngOnInit() {
+    // scroll to top button
     $(document).ready(function(){
       $('.modal').modal();
 

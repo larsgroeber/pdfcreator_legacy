@@ -35,7 +35,7 @@ export class LatexService {
   private descriptionChanged = new Subject();
   descriptionChangedOb = this.descriptionChanged.asObservable();
 
-  ondescriptionChanged(): void {
+  onDescriptionChanged(): void {
     this.descriptionChanged.next();
   }
 
@@ -43,7 +43,7 @@ export class LatexService {
   private loadDoc = new Subject<TemplateI>();
   loadDocOb = this.loadDoc.asObservable();
 
-  onloadDoc(docName: TemplateI): void {
+  onLoadDoc(docName: TemplateI): void {
     this.loadDoc.next(docName);
   }
 
@@ -51,7 +51,7 @@ export class LatexService {
   private loadTemplates = new Subject<string>();
   loadTemplatesOb = this.loadTemplates.asObservable();
 
-  onloadTemplates(selectedDoc: string): void {
+  onLoadTemplates(selectedDoc: string): void {
     this.loadTemplates.next(selectedDoc);
   }
 

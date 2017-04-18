@@ -1,0 +1,22 @@
+#view-tab-btn i {
+  color: #d6d6d6;
+}
+
+#view-tab-btn {
+
+}
+
+.tab-toggled i {
+  color: black !important;
+}
+
+.tab-toggled {
+}
+
+#pdf-tabs {
+  margin-bottom: 10px;
+}
+
+#pdf-tabs li a {
+  color: rgb(248, 172, 0);
+}
