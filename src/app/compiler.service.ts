@@ -20,6 +20,8 @@ export class CompilerService {
   }
 
   public compileLatex(docName: string, mainTex: string, callback): void {
+    mainTex = Template.removeComments(Template.removeVariablesAndStatements(mainTex));
+    console.log(mainTex);
     this.api.convertLatex(docName, mainTex).subscribe((data) => {
       callback(this.makeSafeURL(data));
     }, (err) => {

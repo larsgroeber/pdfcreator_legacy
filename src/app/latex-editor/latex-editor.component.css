@@ -18,3 +18,7 @@
 #template-options {
   margin-bottom: 20px;
 }
+
+.switch {
+  display: inline-block;
+}

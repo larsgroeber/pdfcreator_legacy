@@ -16,8 +16,6 @@
 <div>
   <app-template-select (templateSelected)="onTemplateChange($event)"></app-template-select>
   <div id="template-buttons">
-    <button class="btn btn-raised btn-primary btn-space" data-target="delete-doc-dialog"
-            *ngIf="currentTemplate">Delete</button>
     <button class="btn btn-raised btn-space" data-target="new-doc-dialog">New</button>
     <button class="btn btn-raised btn-space" (click)="showMoreOptions = !showMoreOptions" *ngIf="currentTemplate">
       <i class="material-icons">more_horiz</i></button>
@@ -51,20 +49,21 @@
 
 <!-- EDITOR -->
 <div class="row" style="margin-top: 20px" [hidden]="!currentTemplate">
-  <div id="template-options" class="card" [hidden]="!showMoreOptions">
+  <div id="template-options" *ngIf="currentTemplate" class="card" [hidden]="!showMoreOptions">
     <div class="card-content">
-      <div class="input-field" *ngIf="currentTemplate">
+      <div class="input-field">
         <textarea id="description" [(ngModel)]="currentTemplate.desc" (keyup)="onTemplateInfoChange()"
               class="materialize-textarea"></textarea>
         <label for="description">Description:</label>
       </div>
-      <div class="switch" *ngIf="currentTemplate">
+      <div class="switch">
         <label class="tooltipped" data-position="bottom" data-delay="50" data-tooltip="Controls if the template can be used.">
           Active
           <input (change)="onTemplateInfoChange()" [(ngModel)]="currentTemplate.active" type="checkbox">
           <span class="lever"></span>
         </label>
       </div>
+      <button class="btn btn-raised red right" data-target="delete-doc-dialog">Delete</button>
     </div>
   </div>
   <app-file-manager (onTemplateLoadComplete)="onLoadDocComplete()"
