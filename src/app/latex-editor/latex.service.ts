@@ -13,7 +13,7 @@ import {TemplateI} from "../../../server/interfaces/template";
 @Injectable()
 export class LatexService {
 
-  constructor() { }
+  constructor() {}
 
   // event when all files should be saved
   private saveFiles = new Subject<TemplateI>();
@@ -32,11 +32,11 @@ export class LatexService {
   }
 
   // event when the text of the current file has changed
-  private descriptionChanged = new Subject();
-  descriptionChangedOb = this.descriptionChanged.asObservable();
+  private templateChanged = new Subject();
+  templateChangedOb = this.templateChanged.asObservable();
 
-  onDescriptionChanged(): void {
-    this.descriptionChanged.next();
+  onTemplateChanged(): void {
+    this.templateChanged.next();
   }
 
   // event when a new doc should be loaded

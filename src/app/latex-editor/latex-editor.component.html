@@ -66,7 +66,7 @@
       <button class="btn btn-raised red right" data-target="delete-doc-dialog">Delete</button>
     </div>
   </div>
-  <app-file-manager (onTemplateLoadComplete)="onLoadDocComplete()"
+  <app-file-manager (templateLoadComplete)="onLoadDocComplete()"
                     class="col xl3 l4 m4 s12"></app-file-manager>
   <app-text-editor class="col xl9 l8 m8 s12" ngDefaultControl></app-text-editor>
 </div>

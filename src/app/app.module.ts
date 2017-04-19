@@ -17,6 +17,7 @@ import { FillTemplateComponent } from './fill-template/fill-template.component';
 import {CompilerService} from "./compiler.service";
 import { AboutComponent } from './about/about.component';
 import { HelpComponent } from './help/help.component';
+import {TemplateService} from "./template.service";
 
 @NgModule({
   declarations: [
@@ -36,7 +37,7 @@ import { HelpComponent } from './help/help.component';
     HttpModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [LatexService, APIService, CompilerService],
+  providers: [LatexService, APIService, CompilerService, TemplateService],
   bootstrap: [AppComponent]
 })
 export class AppModule {
