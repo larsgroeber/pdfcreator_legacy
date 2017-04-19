@@ -16,6 +16,7 @@ import { TemplateSelectComponent } from './template-select/template-select.compo
 import { FillTemplateComponent } from './fill-template/fill-template.component';
 import {CompilerService} from "./compiler.service";
 import { AboutComponent } from './about/about.component';
+import { HelpComponent } from './help/help.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import { AboutComponent } from './about/about.component';
     TemplateSelectComponent,
     FillTemplateComponent,
     AboutComponent,
-    FileManagerComponent
+    FileManagerComponent,
+    HelpComponent
   ],
   imports: [
     BrowserModule,
