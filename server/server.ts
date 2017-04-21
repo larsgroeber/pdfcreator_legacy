@@ -10,7 +10,8 @@
 import express = require('express');
 import path = require('path');
 import bodyParser = require('body-parser');
-import router = require('./router');
+import routerTemplate = require('./routes/template');
+import routerUser = require('./routes/user');
 import fs = require('fs');
 import https = require('https');
 import mongoose = require('mongoose');
@@ -34,7 +35,8 @@ let allowCrossDomain = function(req, res, next) {
 
 app.use(allowCrossDomain);
 
-app.use(Config.ROOT_URL_EXPRESS, router);
+app.use(Config.ROOT_URL_EXPRESS, routerTemplate);
+app.use(Config.ROOT_URL_EXPRESS, routerUser);
 
 app.use(bodyParser.json());
 
