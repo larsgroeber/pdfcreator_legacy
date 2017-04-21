@@ -59,6 +59,21 @@ export class APIService {
 
   ////// End CRUD system //////
 
+  login(username: string, password: string) {
+    return this.http.post(URL + 'api/user/authenticate', { name: username, password: password })
+      .map(res => {
+        let user = res.json();
+        if (user && user.token) {
+          localStorage.setItem('currentUser', JSON.stringify(user));
+        }
+      })
+      .catch(APIService.handleError);
+  }
+
+  logout() {
+    localStorage.removeItem('currentUser');
+  }
+
   convertLatex(docName: string, latex: string): Observable<string> {
     return this.http.post(URL + 'api/latex/convert', { name: docName, latex: latex })
       .map(res => res.text())

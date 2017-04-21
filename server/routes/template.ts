@@ -14,9 +14,9 @@ import async = require('async');
 
 let mime = require('mime-types');
 
-import * as Config from '../config';
-import {TemplateDB} from "./template.db";
-import {TemplateI} from "./interfaces/template";
+import * as Config from '../../config';
+import {TemplateDB} from "../template.db";
+import {TemplateI} from "../interfaces/template";
 
 let router = express.Router();
 router.use(bodyParser.json());

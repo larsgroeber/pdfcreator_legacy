@@ -15,6 +15,7 @@ import {SafeUrl, Title} from "@angular/platform-browser";
 
 import * as Config from '../../../config';
 import {TemplateI} from "../../../server/interfaces/template";
+import {TemplateService} from "../template.service";
 
 declare let $: any;
 
@@ -33,37 +34,41 @@ export class LatexEditorComponent implements OnInit {
   public safeURL: SafeUrl;
   public newDocName: string;
 
-  constructor(private api: APIService
-    , private notify: LatexService
-    , private compiler: CompilerService
-    , private titleService: Title) {}
+  constructor(private apiService: APIService
+            , private latexService: LatexService
+            , private compilerService: CompilerService
+            , private titleService: Title
+            , private templateService: TemplateService) {}
 
   onCompilePDF(): void {
     this.onSavePDF();
-    this.api.getOneDoc(this.currentTemplate.name).subscribe(data => {
+    this.apiService.getOneDoc(this.currentTemplate.name).subscribe(data => {
       let mainTex = data.find(f => f.name === 'main.tex');
       if (!mainTex) {
         Helper.displayMessage('Could not find main.tex', 0);
         return;
       }
       this.showCompiledPDF = true;
-      this.replacementKeys = this.compiler.getKeys(mainTex.text);
-      this.compiler.compileLatex(this.currentTemplate.name, mainTex.text, url => this.safeURL = url);
+      this.replacementKeys = this.compilerService.getKeys(mainTex.text);
+      this.compilerService.compileLatex(this.currentTemplate.name, mainTex.text, url => this.safeURL = url);
     });
   }
 
   onSavePDF(): void {
-    this.notify.onSaveFiles(this.currentTemplate);
+    this.templateService.saveTemplate(result => {
+      if (result) Helper.displayMessage('Files saved!');
+    }, err => Helper.displayMessage(err, 0));
   }
 
   onLoadDoc(): void {
-    this.notify.onLoadDoc(this.currentTemplate);
+    this.latexService.onLoadDoc(this.currentTemplate);
     this.changeTitle();
     this.showCompiledPDF = false;
   }
 
   onTemplateChange(template: TemplateI): void {
     this.currentTemplate = template;
+    this.templateService.template = this.currentTemplate;
     this.changeTitle();
     this.onLoadDoc();
   }
@@ -76,7 +81,7 @@ export class LatexEditorComponent implements OnInit {
   }
 
   onTemplateInfoChange(): void {
-    this.notify.onDescriptionChanged();
+    this.latexService.onTemplateChanged();
   }
 
   changeTitle(): void {
@@ -91,8 +96,8 @@ export class LatexEditorComponent implements OnInit {
    * Deletes a document.
    */
   onDeleteDoc(): void {
-    this.api.deleteDoc(this.currentTemplate).subscribe(() => {
-      this.notify.onLoadTemplates('');
+    this.apiService.deleteDoc(this.currentTemplate).subscribe(() => {
+      this.latexService.onLoadTemplates('');
       this.currentTemplate = undefined;
       this.changeTitle();
     }, err => Helper.displayMessage(err, 0));
@@ -103,11 +108,11 @@ export class LatexEditorComponent implements OnInit {
    */
   onCreateDoc(): void {
     this.showNewDocDialog = false;
-    this.api.createNewDoc(this.newDocName).subscribe(res => {
+    this.apiService.createNewDoc(this.newDocName).subscribe(res => {
       this.currentTemplate = res.template;
       this.newDocName = '';
       this.onLoadDoc();
-      this.notify.onLoadTemplates(this.currentTemplate.name);
+      this.latexService.onLoadTemplates(this.currentTemplate.name);
     }, err => Helper.displayMessage(err, 0));
   }
 

@@ -16,7 +16,7 @@ export class Helper {
         console.error(message);
         break;
       case 1:
-        Materialize.toast(message, 4000, 'yellow');
+        Materialize.toast(message, 6000, 'orange');
         console.warn(message);
         break;
       case 2:

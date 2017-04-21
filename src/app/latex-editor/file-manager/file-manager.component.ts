@@ -16,6 +16,7 @@ import * as Config from '../../../../config';
 import {mFile} from "../../interfaces/mfile";
 import {Helper} from "../../../include/helper";
 import {TemplateI} from "../../../../server/interfaces/template";
+import {TemplateService} from "../../template.service";
 
 declare let $: any;
 
@@ -46,10 +47,11 @@ export class FileManagerComponent implements OnInit {
 
   @Input() template: TemplateI;
 
-  @Output() onTemplateLoadComplete: EventEmitter<void> = new EventEmitter<void>();
+  @Output() templateLoadComplete: EventEmitter<void> = new EventEmitter<void>();
 
-  constructor(private latex: APIService, private notify: LatexService) {
-  }
+  constructor(private apiService: APIService,
+              private latexService: LatexService,
+              private templateService: TemplateService) {}
 
   /**
    * Changes the currently selected File and updates the model.
@@ -57,16 +59,16 @@ export class FileManagerComponent implements OnInit {
    */
   onFileClick(file: mFile): void {
     this.selectedFile = file;
-    this.notify.onTextChange(file.text);
+    this.latexService.onTextChange(file.text);
   }
 
   /**
    * Is called whenever all files should be saved.
    */
   saveFiles(): void {
-    if (!this.files || !this._needsSave) return;
-    console.log('Save files ' + this.template.name);
-    this.latex.updateDoc(this.template, this.files).subscribe(files => {
+    if (!this.templateService.files || !this._needsSave) return;
+    this.templateService.files = this.templateService.files;
+    this.templateService.saveTemplate(files => {
       if (files) {
         Helper.displayMessage('Files saved!');
       }
@@ -78,10 +80,11 @@ export class FileManagerComponent implements OnInit {
    * Deletes the selected file from files.
    */
   deleteFile(): void {
-    const index = this.files.indexOf(this.selectedFile);
+    const index = this.templateService.files.indexOf(this.selectedFile);
     if (index !== -1) {
-      this.files.splice(index, 1);
-      this.notify.onTextChange('');
+      this.templateService.files.splice(index, 1);
+      this.files = this.templateService.files;
+      this.latexService.onTextChange('');
       this._needsSave = true;
     }
   }
@@ -111,11 +114,12 @@ export class FileManagerComponent implements OnInit {
    * Called when the user creates a new file.
    */
   onNewFileSave(): void {
-    this.files.push({
+    this.templateService.files.push({
       name: this.fileName,
       text: '',
     });
-    this.onFileClick(this.files[this.files.length - 1]);
+    this.files = this.templateService.files;
+    this.onFileClick(this.templateService.files[this.templateService.files.length - 1]);
     this._needsSave = true;
     this.showNewFileDialog = false;
   }
@@ -125,35 +129,35 @@ export class FileManagerComponent implements OnInit {
    */
   reloadFiles(): void {
     console.log('Reload files ' + this.template.name);
-    this.latex.getOneDoc(this.template.name).subscribe((files) => {
-      this.files = files;
-      this.selectedFile = this.files.find(f => f.name === 'main.tex');
+    this.apiService.getOneDoc(this.template.name).subscribe((files) => {
+      this.templateService.files = files;
+      this.files = this.templateService.files;
+      this.selectedFile = this.templateService.files.find(f => f.name === 'main.tex');
       if (this.selectedFile) {
-        this.notify.onTextChange(this.selectedFile.text);
+        this.latexService.onTextChange(this.selectedFile.text);
       }
-      this.onTemplateLoadComplete.emit();
     });
   }
 
   ngOnInit() {
     // listen to notify events
-    this.notify.textChangeOb.subscribe(text => {
+    this.latexService.textChangeOb.subscribe(text => {
       if (this.selectedFile && this.selectedFile.text !== text) {
         this._needsSave = true;
         this.selectedFile.text = text;
       }
     });
-    this.notify.saveFilesOb.subscribe(docName => {
-      this.saveFiles();
-    });
-    this.notify.loadDocOb.subscribe(newDocName => {
+    // this.latexService.saveFilesOb.subscribe(docName => {
+    //   this.saveFiles();
+    // });
+    this.latexService.loadDocOb.subscribe(newDocName => {
       this.saveFiles();
       this.template = newDocName;
       this.reloadFiles();
     });
-    this.notify.descriptionChangedOb.subscribe(() => {
-      this._needsSave = true;
-    });
+    // this.latexService.templateChangedOb.subscribe(() => {
+    //   this._needsSave = true;
+    // });
 
     $(document).ready(function(){
       $('.modal').modal();

@@ -12,8 +12,9 @@
         <i class="material-icons">mode_edit</i> Use Template
       </a>
     </li>
-    <li>
-      <a [routerLink]="['/edit']" routerLinkActive="active" onclick="$('side-nav-toggle').sideNav('hide')">
+    <li [hidden]="!currentUser">
+      <a [routerLink]="['/edit']" routerLinkActive="active"
+         onclick="$('side-nav-toggle').sideNav('hide')">
         <i class="material-icons">code</i> Edit Templates
       </a>
     </li>
@@ -35,11 +36,33 @@
       <a href="#" class="brand-logo">PDFCreator
         <a href="https://github.com/Larsg7/pdfcreator"><button class="btn-floating red" id="alpha-plug">&alpha;</button></a></a>
       <ul class="right">
-        <li><a [routerLink]="['/about']" href="collapsible.html">About</a></li>
+        <li>
+          <a href="#login-modal" *ngIf="!currentUser">Login</a>
+          <a (click)="onLogout()" *ngIf="currentUser">Logout</a>
+        </li>
+        <li><a [routerLink]="['/about']">About</a></li>
       </ul>
     </div>
   </nav>
   <div id="main-content">
     <router-outlet></router-outlet>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal" id="login-modal">
+  <div class="modal-content">
+    <p class="dialog-header">Login</p>
+    <div class="input-field">
+      <input id="username" type="text" class="form-control" [(ngModel)]="userName">
+      <label for="username">Username</label>
+    </div>
+    <div class="input-field">
+      <input id="password" type="password" class="form-control" [(ngModel)]="password">
+      <label for="password">Password</label>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-flat modal-close left modal-action" (click)="onLogin()">Login</button>
   </div>
 </div>
