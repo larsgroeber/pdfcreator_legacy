@@ -110,6 +110,7 @@ export class LatexEditorComponent implements OnInit {
     this.showNewDocDialog = false;
     this.apiService.createNewDoc(this.newDocName).subscribe(res => {
       this.currentTemplate = res.template;
+      this.templateService.template = this.currentTemplate;
       this.newDocName = '';
       this.onLoadDoc();
       this.latexService.onLoadTemplates(this.currentTemplate.name);

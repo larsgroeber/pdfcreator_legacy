@@ -11,8 +11,10 @@ import bodyParser = require('body-parser');
 import fs = require('fs-extra');
 import multer = require('multer');
 import async = require('async');
+import * as _ from 'lodash';
 
 let mime = require('mime-types');
+let PDFMerge = require('pdf-merge');
 
 import * as Config from '../../config';
 import {TemplateDB} from "../template.db";
@@ -25,11 +27,14 @@ let upload = multer({dest: '/tmp/'});
 
 export = router;
 
-router.post('/convert', convert);
+router.post('/convert', convertOne);
+router.post('/convert_series', convertSeries);
 router.post('/upload', upload.single('file'), upload_file);
 router.get('/get_all', get_all);
-
-// upload a file to the requested directory
+router.post('/get', getOne);
+router.post('/create', createOne);
+router.post('/delete', deleteOne);
+router.post('/update', updateOne);
 
 // test route
 router.get('/api', (req, res) => {
@@ -50,7 +55,7 @@ function convert_single(req, res) {
 // Converts a complete latex document by taking the 'main.tex' file
 // and the name of the document as arguments in the body.
 // Returns the compiled PDF as a dataurl.
-function convert(req, res) {
+function convertOne(req, res) {
   let name = req.body.name;
   let latex = req.body.latex;
   if (name && latex) {
@@ -61,6 +66,50 @@ function convert(req, res) {
       })
       .pipe(require('dataurl').stream({mimetype: 'application/pdf'}))
       .pipe(res);
+  } else {
+    console.log('Bad Request!');
+    res.sendStatus(400);
+  }
+}
+
+function convertSeries(req, res) {
+  console.log(req.body);
+  let name: string = req.body.name;
+  let latexDocs: string[] = req.body.latex;
+  if (name && latexDocs) {
+    let dir = '/tmp/pdfcreator_series/';
+    let docs: string[] = [];
+    // generate pdfs
+    _.each(latexDocs, (latex, i) => {
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir);
+      }
+      let pdfName = dir + i + '.pdf';
+      require('node-latex')(latex, {inputs: Config.DATA_PATH + name + '/'})
+        .on('error', err => {
+          console.error(err);
+          res.status(500).send({error: err.toString()});
+        }).pipe(fs.createWriteStream(pdfName));
+      docs.push(pdfName);
+    });
+
+    // concat pdfs
+    // let pdfMerge = new PDFMerge(docs);
+    // console.log(pdfMerge)
+    // pdfMerge.asBuffer().merge((err, buffer) => {
+    //   fs.writeFileSync(dir + 'gen.pdf', buffer);
+    //   fs.createReadStream(dir + 'gen.pdf')
+    //     .pipe(require('dataurl').stream({mimetype: 'application/pdf'}))
+    //     .pipe(res);
+    // });
+    require('easy-pdf-merge')(docs, dir + 'gen.pdf', err => {
+      if (err) {
+        res.status(500).send(err);
+      }
+      fs.createReadStream(dir + 'gen.pdf')
+          .pipe(require('dataurl').stream({mimetype: 'application/pdf'}))
+          .pipe(res);
+    })
   } else {
     console.log('Bad Request!');
     res.sendStatus(400);
@@ -104,7 +153,7 @@ function get_all(req, res) {
 
 // Get one document, returns all file objects.
 // Expects a 'name' parameter in body.
-router.post('/get', (req, res) => {
+function getOne(req, res) {
   let name = req.body.name;
   if (name) {
     fs.readdir(Config.DATA_PATH + name, (err, files) => {
@@ -135,11 +184,11 @@ router.post('/get', (req, res) => {
     console.log('Bad Request.');
     res.sendStatus(400);
   }
-});
+}
 
 // Create a new document, returns an empty 'main.tex' file object.
 // Expects a 'name' parameter in body.
-router.post('/create', (req, res) => {
+function createOne(req, res) {
   let name = req.body.name;
   if (name) {
     // TODO: check db
@@ -177,11 +226,11 @@ router.post('/create', (req, res) => {
     console.log('Bad Request.');
     res.sendStatus(400);
   }
-});
+}
 
 // Delete one document, returns an empty response.
 // Expects the template to delete in body.
-router.post('/delete', (req, res) => {
+function deleteOne(req, res) {
   let template: TemplateI = req.body.template;
   console.log("Delete: ", template);
   if (template) {
@@ -204,11 +253,11 @@ router.post('/delete', (req, res) => {
     console.log('Bad Request.');
     res.sendStatus(400);
   }
-});
+}
 
 // Update a document, returns all updated file objects.
 // Expects a 'template' and a 'files' property with an array of all file objects in body.
-router.post('/update', (req, res) => {
+function updateOne(req, res) {
   let template: TemplateI = req.body.template;
   let newFiles: mFile[] = req.body.files;
   console.log('Update: ', req.body);
@@ -256,7 +305,7 @@ router.post('/update', (req, res) => {
     console.log('Bad Request.');
     res.sendStatus(400);
   }
-});
+}
 
 function handleErr(err, res): boolean {
   if (err) {

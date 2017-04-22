@@ -28,7 +28,6 @@ export class TemplateService {
 
   saveTemplate(next: (result: { template: TemplateI, files: mFile[] }) => void,
                error: (err: any) => void): void {
-    console.log(this._template, this._files);
     console.log('Save files ' + this._template.name);
     this.api.updateDoc(this._template, this._files).subscribe(next, error);
   }

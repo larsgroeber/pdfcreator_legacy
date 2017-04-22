@@ -74,8 +74,16 @@ export class APIService {
     localStorage.removeItem('currentUser');
   }
 
+  ////// Conver Latex //////
+
   convertLatex(docName: string, latex: string): Observable<string> {
     return this.http.post(URL + 'api/template/convert', { name: docName, latex: latex })
+      .map(res => res.text())
+      .catch(APIService.handleError);
+  }
+
+  convertLatexSeries(docName: string, latex: string[]): Observable<string> {
+    return this.http.post(URL + 'api/template/convert_series', { name: docName, latex: latex })
       .map(res => res.text())
       .catch(APIService.handleError);
   }
