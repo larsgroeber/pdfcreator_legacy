@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {APIService} from "./api.service";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
-import {Helper} from "../include/helper";
-import {Template} from "../include/Template";
+import {Helper} from "../../include/helper";
+import {Template} from "../../include/Template";
 
 @Injectable()
 export class CompilerService {
@@ -21,10 +21,26 @@ export class CompilerService {
 
   public compileLatex(docName: string, mainTex: string, callback): void {
     mainTex = Template.removeComments(Template.removeVariablesAndStatements(mainTex));
-    console.log(mainTex);
     this.api.convertLatex(docName, mainTex).subscribe((data) => {
       callback(this.makeSafeURL(data));
     }, (err) => {
+      Helper.displayMessage(err, 0);
+    });
+  }
+
+  public replaceAndCompileSeries(docName: string, mainTex: string, values, callback): void {
+    let docs: string[] = [];
+    let template = new Template(mainTex);
+    for (let value of values) {
+      docs.push(Template.removeComments(Template.removeVariablesAndStatements(template.replace(value))));
+    }
+    return this.complileLatexSeries(docName, docs, callback);
+  }
+
+  public complileLatexSeries(docName: string, mainTexArray: string[], callback): void {
+    this.api.convertLatexSeries(docName, mainTexArray).subscribe(data => {
+      callback(this.makeSafeURL(data));
+    }, err => {
       Helper.displayMessage(err, 0);
     });
   }

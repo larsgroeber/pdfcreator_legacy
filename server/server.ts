@@ -15,7 +15,6 @@ import routerUser = require('./routes/user');
 import fs = require('fs');
 import https = require('https');
 import mongoose = require('mongoose');
-import * as assert from "assert";
 
 import * as Config from '../config';
 
@@ -27,7 +26,8 @@ mongoose.Promise = global.Promise;
 
 // CORS middleware
 let allowCrossDomain = function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Origin', 'http://localhost:4200');
+  res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'GET,POST');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
@@ -35,7 +35,7 @@ let allowCrossDomain = function(req, res, next) {
 
 app.use(allowCrossDomain);
 
-app.use(Config.ROOT_URL_EXPRESS, routerTemplate);
+app.use('/api/template', routerTemplate);
 app.use(Config.ROOT_URL_EXPRESS, routerUser);
 
 app.use(bodyParser.json());

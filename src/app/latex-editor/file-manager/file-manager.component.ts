@@ -8,7 +8,7 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {APIService} from "../../api.service";
+import {APIService} from "../../services/api.service";
 import {LatexService} from "../latex.service";
 import {FileUploader} from "ng2-file-upload";
 
@@ -16,11 +16,11 @@ import * as Config from '../../../../config';
 import {mFile} from "../../interfaces/mfile";
 import {Helper} from "../../../include/helper";
 import {TemplateI} from "../../../../server/interfaces/template";
-import {TemplateService} from "../../template.service";
+import {TemplateService} from "../../services/template.service";
 
 declare let $: any;
 
-const URL = Config.SERVER_URL + Config.ROOT_URL + 'api/upload';
+const URL_UPLOAD = Config.SERVER_URL + Config.ROOT_URL + 'api/template/upload';
 
 @Component({
   selector: 'app-file-manager',
@@ -40,7 +40,7 @@ export class FileManagerComponent implements OnInit {
 
   // new files
   public fileName: string;
-  public uploader: FileUploader = new FileUploader({ url: URL });
+  public uploader: FileUploader = new FileUploader({ url: URL_UPLOAD });
 
   public showNewFileDialog = false;
   public showUploadFileDialog = false;
@@ -93,8 +93,9 @@ export class FileManagerComponent implements OnInit {
    * Called when the user uploads a file.
    */
   onFileUpload(): void {
+    console.log(this.uploader.queue)
     this.uploader.onBuildItemForm = (item, form) => {
-      form.append('name', this.template);
+      form.append('name', this.template.name);
     };
     this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
       console.log('ImageUpload:uploaded:', item, status);

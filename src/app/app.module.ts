@@ -6,19 +6,20 @@ import {HttpModule} from '@angular/http';
 import {AppComponent} from './app-component/app.component';
 import {PDFDisplayComponent} from './pdf-display/pdf-display.component';
 import {TextEditorComponent} from "./latex-editor/text-editor/text-editor.component";
-import {APIService} from "./api.service";
+import {APIService} from "./services/api.service";
 import {FileManagerComponent} from './latex-editor/file-manager/file-manager.component';
 import {LatexEditorComponent} from './latex-editor/latex-editor.component';
 import {LatexService} from "./latex-editor/latex.service";
 import {RouterModule} from "@angular/router";
-import {appRoutes} from "./routes";
+import {appRoutes} from "./app.routes";
 import { TemplateSelectComponent } from './template-select/template-select.component';
 import { FillTemplateComponent } from './fill-template/fill-template.component';
-import {CompilerService} from "./compiler.service";
+import {CompilerService} from "./services/compiler.service";
 import { AboutComponent } from './about/about.component';
 import { HelpComponent } from './help/help.component';
-import {TemplateService} from "./template.service";
-import {AuthService} from "./guards/auth.service";
+import {TemplateService} from "./services/template.service";
+import {EditGuard} from "./guards/edit.service";
+import {FileSelectDirective} from "ng2-file-upload";
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import {AuthService} from "./guards/auth.service";
     FillTemplateComponent,
     AboutComponent,
     FileManagerComponent,
+    FileSelectDirective,
     HelpComponent
   ],
   imports: [
@@ -38,7 +40,7 @@ import {AuthService} from "./guards/auth.service";
     HttpModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [LatexService, APIService, CompilerService, TemplateService, AuthService],
+  providers: [LatexService, APIService, CompilerService, TemplateService, EditGuard],
   bootstrap: [AppComponent]
 })
 export class AppModule {

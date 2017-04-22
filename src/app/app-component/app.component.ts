@@ -1,5 +1,12 @@
+/**
+ * @file app.component.ts
+ *
+ * Main app component: displays the navigation and side bar and takes care of user authentication for now
+ * TODO: move user authentication somewhere else
+ */
+
 import {Component, OnInit} from '@angular/core';
-import {APIService} from "../api.service";
+import {APIService} from "../services/api.service";
 import {Helper} from "../../include/helper";
 
 declare let $: any;
@@ -38,7 +45,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     $(document).ready(function(){
-      // the "href" attribute of .modal-trigger must specify the modal ID that wants to be triggered
       $('.modal').modal();
       $("#side-nav-toggle").sideNav();
     });
