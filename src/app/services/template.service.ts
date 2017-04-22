@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {TemplateI} from "../../server/interfaces/template";
-import {mFile} from "./interfaces/mfile";
+import {TemplateI} from "../../../server/interfaces/template";
+import {mFile} from "../interfaces/mfile";
 import {APIService} from "./api.service";
 
 @Injectable()

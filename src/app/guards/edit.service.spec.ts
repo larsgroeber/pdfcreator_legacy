@@ -1,15 +1,15 @@
 import { TestBed, inject } from '@angular/core/testing';
 
-import { AuthService } from './auth.service';
+import { EditGuard } from './edit.service';
 
 describe('AuthService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [AuthService]
+      providers: [EditGuard]
     });
   });
 
-  it('should ...', inject([AuthService], (service: AuthService) => {
+  it('should ...', inject([EditGuard], (service: EditGuard) => {
     expect(service).toBeTruthy();
   }));
 });

@@ -9,11 +9,11 @@
 import {Component, OnInit} from '@angular/core';
 import {SafeUrl, Title} from '@angular/platform-browser';
 import * as _ from 'lodash';
-import {APIService} from "../api.service";
+import {APIService} from "../services/api.service";
 import {mFile} from "../interfaces/mfile";
 import {Replacement} from "../interfaces/replacement";
 import {Helper} from "../../include/helper";
-import {CompilerService} from "../compiler.service";
+import {CompilerService} from "../services/compiler.service";
 
 import * as Config from '../../../config';
 import {TemplateI} from "../../../server/interfaces/template";

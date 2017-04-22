@@ -5,7 +5,7 @@
  */
 
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {APIService} from "../api.service";
+import {APIService} from "../services/api.service";
 import {Helper} from "../../include/helper";
 import {LatexService} from "../latex-editor/latex.service";
 import {TemplateI} from "../../../server/interfaces/template";

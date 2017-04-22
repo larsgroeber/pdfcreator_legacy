@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import {APIService} from "./api.service";
 import {DomSanitizer, SafeUrl} from "@angular/platform-browser";
-import {Helper} from "../include/helper";
-import {Template} from "../include/Template";
+import {Helper} from "../../include/helper";
+import {Template} from "../../include/Template";
 
 @Injectable()
 export class CompilerService {

@@ -7,15 +7,15 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {APIService} from "../api.service";
+import {APIService} from "../services/api.service";
 import {LatexService} from "./latex.service";
 import {Helper} from "../../include/helper";
-import {CompilerService} from "../compiler.service";
+import {CompilerService} from "../services/compiler.service";
 import {SafeUrl, Title} from "@angular/platform-browser";
 
 import * as Config from '../../../config';
 import {TemplateI} from "../../../server/interfaces/template";
-import {TemplateService} from "../template.service";
+import {TemplateService} from "../services/template.service";
 
 declare let $: any;
 

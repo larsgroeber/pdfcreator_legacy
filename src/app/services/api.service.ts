@@ -10,8 +10,8 @@ import { Injectable } from '@angular/core';
 import {Http, Response} from "@angular/http";
 import {Observable} from "rxjs";
 import 'rxjs/add/operator/map';
-import * as Config from "../../config";
-import {TemplateI} from "../../server/interfaces/template";
+import * as Config from "../../../config";
+import {TemplateI} from "../../../server/interfaces/template";
 
 interface mFile {
   name: string,
@@ -75,7 +75,7 @@ export class APIService {
   }
 
   convertLatex(docName: string, latex: string): Observable<string> {
-    return this.http.post(URL + 'api/latex/convert', { name: docName, latex: latex })
+    return this.http.post(URL + 'api/template/convert', { name: docName, latex: latex })
       .map(res => res.text())
       .catch(APIService.handleError);
   }
