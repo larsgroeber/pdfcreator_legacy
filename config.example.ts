@@ -1,4 +1,4 @@
-// Name and version of the app, the former will be displayed 
+// Name and version of the app, the former will be displayed
 export const APP_NAME = 'PDFCreator';
 export const APP_VERSION = '0.2.0';
 

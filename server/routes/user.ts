@@ -4,9 +4,9 @@ import express = require('express');
 import mongoosse = require('mongoose');
 import bcrypt = require('bcrypt');
 import jwt = require('jsonwebtoken');
-import {UserModel, UserModelI} from "../models/user.model";
+import {UserModel} from "../models/user.model";
 
-import {AUTH_SECRET} from '../secrets';
+import {AUTH_SECRET} from '../../config';
 
 let router = express.Router();
 router.use(bodyParser.json());

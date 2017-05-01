@@ -1,1 +1,0 @@
-export const AUTH_SECRET = 'YOUR_SECRET_HERE';
