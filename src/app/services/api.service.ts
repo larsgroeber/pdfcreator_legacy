@@ -7,7 +7,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import {Http, Response} from "@angular/http";
+import {Http, RequestOptions, Response, Headers} from "@angular/http";
 import {Observable} from "rxjs";
 import 'rxjs/add/operator/map';
 import * as Config from "../../../config";
@@ -40,19 +40,19 @@ export class APIService {
   }
 
   createNewDoc(docName: string): Observable<{ template: TemplateI, files: mFile[] }> {
-    return this.http.post(URL + 'api/template/create', { name: docName } )
+    return this.http.post(URL + 'api/template/create', { name: docName }, this.jwt())
       .map(res => res.json())
       .catch(APIService.handleError);
   }
 
   updateDoc(template: TemplateI, files: mFile[]): Observable<{ template: TemplateI, files: mFile[] }> {
-    return this.http.post(URL + 'api/template/update', { template: template, files: files } )
+    return this.http.post(URL + 'api/template/update', { template: template, files: files }, this.jwt())
       .map(res => res.json())
       .catch(APIService.handleError);
   }
 
   deleteDoc(template: TemplateI): Observable<string> {
-    return this.http.post(URL + 'api/template/delete', { template: template } )
+    return this.http.post(URL + 'api/template/delete', { template: template }, this.jwt())
       .map(res => res.text())
       .catch(APIService.handleError);
   }
@@ -86,6 +86,14 @@ export class APIService {
     return this.http.post(URL + 'api/template/convert_series', { name: docName, latex: latex })
       .map(res => res.text())
       .catch(APIService.handleError);
+  }
+
+  private jwt(): RequestOptions {
+    let currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (currentUser && currentUser.token) {
+      let headers = new Headers({ 'Authorization': 'Bearer ' + currentUser.token });
+      return new RequestOptions({ headers: headers });
+    }
   }
 
   // see angular 2 guides

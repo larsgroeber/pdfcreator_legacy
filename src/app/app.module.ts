@@ -19,7 +19,7 @@ import { AboutComponent } from './about/about.component';
 import { HelpComponent } from './help/help.component';
 import {TemplateService} from "./services/template.service";
 import {EditGuard} from "./guards/edit.service";
-import {FileSelectDirective} from "ng2-file-upload";
+import {FileUploadModule} from "ng2-file-upload";
 
 @NgModule({
   declarations: [
@@ -31,13 +31,13 @@ import {FileSelectDirective} from "ng2-file-upload";
     FillTemplateComponent,
     AboutComponent,
     FileManagerComponent,
-    FileSelectDirective,
     HelpComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
+    FileUploadModule,
     RouterModule.forRoot(appRoutes)
   ],
   providers: [LatexService, APIService, CompilerService, TemplateService, EditGuard],

@@ -11,6 +11,7 @@ import bodyParser = require('body-parser');
 import fs = require('fs-extra');
 import multer = require('multer');
 import async = require('async');
+import expressJWT = require('express-jwt');
 import * as _ from 'lodash';
 
 let mime = require('mime-types');
@@ -22,6 +23,14 @@ import {TemplateI} from "../interfaces/template";
 
 let router = express.Router();
 router.use(bodyParser.json());
+router.use(expressJWT({ secret: Config.AUTH_SECRET }).unless({
+  path: [
+      '/api/template/convert',
+      '/api/template/convert_series',
+      '/api/template/get_all',
+      '/api/template/get',
+    ]
+}));
 
 let upload = multer({dest: '/tmp/'});
 

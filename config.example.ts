@@ -1,10 +1,13 @@
-
+// Name and version of the app, the former will be displayed 
 export const APP_NAME = 'PDFCreator';
 export const APP_VERSION = '0.2.0';
 
 ////// DB //////
 // URL to your mongodb installation including login data
 export const MONGO_URL = 'mongodb://localhost/pdfcreator';
+
+// Secret to encrypt the JWT with (can be anything)
+export const AUTH_SECRET = 'YOUR_SECRET_HERE';
 
 ////// SERVER //////
 // URL to the main site

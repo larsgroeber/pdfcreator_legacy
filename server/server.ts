@@ -25,11 +25,12 @@ global.Promise = require("q").Promise;
 mongoose.Promise = global.Promise;
 
 // CORS middleware
-let allowCrossDomain = function(req, res, next) {
+let allowCrossDomain = function (req, res, next) {
   res.header('Access-Control-Allow-Origin', 'http://localhost:4200');
   res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET,POST');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS,HEAD,PUT');
+  res.header('Access-Control-Allow-Headers', "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With" +
+    ", Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization");
   next();
 };
 
@@ -40,9 +41,8 @@ app.use(Config.ROOT_URL_EXPRESS, routerUser);
 
 app.use(bodyParser.json());
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(Config.ROOT_URL_EXPRESS, express.static(path.join(__dirname, '../dist/')));
-
 
 
 app.get('*', (req, res) => {

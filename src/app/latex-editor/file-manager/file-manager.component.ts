@@ -17,6 +17,7 @@ import {mFile} from "../../interfaces/mfile";
 import {Helper} from "../../../include/helper";
 import {TemplateI} from "../../../../server/interfaces/template";
 import {TemplateService} from "../../services/template.service";
+import {EditGuard} from "../../guards/edit.service";
 
 declare let $: any;
 
@@ -40,7 +41,7 @@ export class FileManagerComponent implements OnInit {
 
   // new files
   public fileName: string;
-  public uploader: FileUploader = new FileUploader({ url: URL_UPLOAD });
+  public uploader: FileUploader = new FileUploader({ url: URL_UPLOAD, authToken: 'Bearer ' + this.editGuard.jwt() });
 
   public showNewFileDialog = false;
   public showUploadFileDialog = false;
@@ -51,7 +52,8 @@ export class FileManagerComponent implements OnInit {
 
   constructor(private apiService: APIService,
               private latexService: LatexService,
-              private templateService: TemplateService) {}
+              private templateService: TemplateService,
+              private editGuard: EditGuard) {}
 
   /**
    * Changes the currently selected File and updates the model.
