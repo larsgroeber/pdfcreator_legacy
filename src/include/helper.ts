@@ -1,7 +1,6 @@
 declare let Materialize: any;
 
 export class Helper {
-  // TODO: display differently based on level
   /**
    * 0: Error
    * 1: Warning
@@ -12,11 +11,11 @@ export class Helper {
 
     switch (level) {
       case 0:
-        Materialize.toast(message, 10000, 'red');
+        Materialize.toast(message, 10000000, 'red');
         console.error(message);
         break;
       case 1:
-        Materialize.toast(message, 6000, 'orange');
+        Materialize.toast(message, 10000, 'orange');
         console.warn(message);
         break;
       case 2:

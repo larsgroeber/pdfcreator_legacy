@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {TemplateI} from "../../../server/interfaces/template";
 import {mFile} from "../interfaces/mfile";
 import {APIService} from "./api.service";
+import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class TemplateService {
@@ -26,9 +27,16 @@ export class TemplateService {
     this._files = value;
   }
 
-  saveTemplate(next: (result: { template: TemplateI, files: mFile[] }) => void,
-               error: (err: any) => void): void {
-    console.log('Save files ' + this._template.name);
-    this.api.updateDoc(this._template, this._files).subscribe(next, error);
+  saveTemplate(): Observable<{ template: TemplateI, files: mFile[] }> {
+    return Observable.create(observer => {
+      if (this._template && this._files) {
+        this.api.updateDoc(this._template, this._files).subscribe(
+          res => observer.next(res)
+          , err => observer.error(err)
+        );
+      } else {
+        observer.next();
+      }
+    })
   }
 }

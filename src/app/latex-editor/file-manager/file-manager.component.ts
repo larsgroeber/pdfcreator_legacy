@@ -18,6 +18,7 @@ import {Helper} from "../../../include/helper";
 import {TemplateI} from "../../../../server/interfaces/template";
 import {TemplateService} from "../../services/template.service";
 import {EditGuard} from "../../guards/edit.service";
+import {Observable} from "rxjs/Observable";
 
 declare let $: any;
 
@@ -67,15 +68,21 @@ export class FileManagerComponent implements OnInit {
   /**
    * Is called whenever all files should be saved.
    */
-  saveFiles(): void {
-    if (!this.templateService.files || !this._needsSave) return;
-    this.templateService.files = this.templateService.files;
-    this.templateService.saveTemplate(files => {
-      if (files) {
-        Helper.displayMessage('Files saved!');
+  saveFiles(): Observable<boolean> {
+    return Observable.create(observer => {
+      if (!this.templateService.files || !this._needsSave) {
+        observer.next();
+        return;
       }
-      this._needsSave = false;
-    }, err => Helper.displayMessage(err, 0));
+      this.templateService.saveTemplate().subscribe(files => {
+        console.log("Save " + this.templateService.template.name);
+        if (files) {
+          Helper.displayMessage('Files saved!');
+        }
+        this._needsSave = false;
+        observer.next();
+      }, err => observer.error(err));
+    })
   }
 
   /**
@@ -154,9 +161,10 @@ export class FileManagerComponent implements OnInit {
     //   this.saveFiles();
     // });
     this.latexService.loadDocOb.subscribe(newDocName => {
-      this.saveFiles();
-      this.template = newDocName;
-      this.reloadFiles();
+      this.saveFiles().subscribe(res => {
+        this.template = newDocName;
+        this.reloadFiles();
+      }, err => Helper.displayMessage(err, 0));
     });
     // this.latexService.templateChangedOb.subscribe(() => {
     //   this._needsSave = true;

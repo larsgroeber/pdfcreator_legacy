@@ -16,6 +16,8 @@ import {SafeUrl, Title} from "@angular/platform-browser";
 import * as Config from '../../../config';
 import {TemplateI} from "../../../server/interfaces/template";
 import {TemplateService} from "../services/template.service";
+import {Observable} from "rxjs/Observable";
+import {mFile} from "../interfaces/mfile";
 
 declare let $: any;
 
@@ -41,23 +43,25 @@ export class LatexEditorComponent implements OnInit {
             , private templateService: TemplateService) {}
 
   onCompilePDF(): void {
-    this.onSavePDF();
-    this.apiService.getOneDoc(this.currentTemplate.name).subscribe(data => {
-      let mainTex = data.find(f => f.name === 'main.tex');
-      if (!mainTex) {
-        Helper.displayMessage('Could not find main.tex', 0);
-        return;
-      }
-      this.showCompiledPDF = true;
-      this.replacementKeys = this.compilerService.getKeys(mainTex.text);
-      this.compilerService.compileLatex(this.currentTemplate.name, mainTex.text, url => this.safeURL = url);
-    });
+    this.onSavePDF().subscribe(res => {
+      this.apiService.getOneDoc(this.currentTemplate.name).subscribe(data => {
+        let mainTex = data.find(f => f.name === 'main.tex');
+        if (!mainTex) {
+          Helper.displayMessage('Could not find main.tex', 0);
+          return;
+        }
+        this.showCompiledPDF = true;
+        this.replacementKeys = this.compilerService.getKeys(mainTex.text);
+        this.compilerService.compileLatex(this.currentTemplate.name, mainTex.text).subscribe(
+          url => this.safeURL = url,
+          err => Helper.displayMessage(err, 0)
+        );
+      });
+    }, err => Helper.displayMessage(err, 0));
   }
 
-  onSavePDF(): void {
-    this.templateService.saveTemplate(result => {
-      if (result) Helper.displayMessage('Files saved!');
-    }, err => Helper.displayMessage(err, 0));
+  onSavePDF(): Observable<{ template: TemplateI, files: mFile[] }> {
+    return this.templateService.saveTemplate();
   }
 
   onLoadDoc(): void {
@@ -67,10 +71,13 @@ export class LatexEditorComponent implements OnInit {
   }
 
   onTemplateChange(template: TemplateI): void {
-    this.currentTemplate = template;
-    this.templateService.template = this.currentTemplate;
-    this.changeTitle();
-    this.onLoadDoc();
+    console.log(this.templateService.template)
+    this.onSavePDF().subscribe(res => {
+      this.currentTemplate = template;
+      this.templateService.template = this.currentTemplate;
+      this.changeTitle();
+      this.onLoadDoc();
+    })
   }
 
   onLoadDocComplete(): void {
