@@ -8,18 +8,19 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {APIService} from "../../services/api.service";
-import {LatexService} from "../latex.service";
-import {FileUploader} from "ng2-file-upload";
+import {APIService} from '../../services/api.service';
+import {LatexService} from '../latex.service';
+import {FileUploader} from 'ng2-file-upload';
 
 import * as Config from '../../../../config';
-import {mFile} from "../../interfaces/mfile";
-import {Helper} from "../../../include/helper";
-import {TemplateI} from "../../../../server/interfaces/template";
-import {TemplateService} from "../../services/template.service";
-import {EditGuard} from "../../guards/edit.service";
+import {mFile} from '../../interfaces/mfile';
+import {Helper} from '../../../include/helper';
+import {TemplateI} from '../../../../server/interfaces/template';
+import {TemplateService} from '../../services/template.service';
+import {EditGuard} from '../../guards/edit.service';
+import {Observable} from 'rxjs/Observable';
 
-declare let $: any;
+declare const $: any;
 
 const URL_UPLOAD = Config.SERVER_URL + Config.ROOT_URL + 'api/template/upload';
 
@@ -32,16 +33,14 @@ const URL_UPLOAD = Config.SERVER_URL + Config.ROOT_URL + 'api/template/upload';
 export class FileManagerComponent implements OnInit {
   // files
   private files: mFile[];
-  private selectedFile: mFile = { name: '', text: ''};
-
-  private _needsSave = false;
+  private selectedFile: mFile = {name: '', text: ''};
 
   // info box
   public info: string;
 
   // new files
   public fileName: string;
-  public uploader: FileUploader = new FileUploader({ url: URL_UPLOAD, authToken: 'Bearer ' + this.editGuard.jwt() });
+  public uploader: FileUploader = new FileUploader({url: URL_UPLOAD, authToken: 'Bearer ' + this.editGuard.jwt()});
 
   public showNewFileDialog = false;
   public showUploadFileDialog = false;
@@ -49,11 +48,13 @@ export class FileManagerComponent implements OnInit {
   @Input() template: TemplateI;
 
   @Output() templateLoadComplete: EventEmitter<void> = new EventEmitter<void>();
+  @Output() saveFiles: EventEmitter<void> = new EventEmitter<void>();
 
   constructor(private apiService: APIService,
               private latexService: LatexService,
               private templateService: TemplateService,
-              private editGuard: EditGuard) {}
+              private editGuard: EditGuard) {
+  }
 
   /**
    * Changes the currently selected File and updates the model.
@@ -67,15 +68,9 @@ export class FileManagerComponent implements OnInit {
   /**
    * Is called whenever all files should be saved.
    */
-  saveFiles(): void {
-    if (!this.templateService.files || !this._needsSave) return;
-    this.templateService.files = this.templateService.files;
-    this.templateService.saveTemplate(files => {
-      if (files) {
-        Helper.displayMessage('Files saved!');
-      }
-      this._needsSave = false;
-    }, err => Helper.displayMessage(err, 0));
+  onSaveFiles(): void {
+    this.templateService.saveTemplate().subscribe(files => {}
+    , err => Helper.displayMessage(err, 0));
   }
 
   /**
@@ -87,7 +82,7 @@ export class FileManagerComponent implements OnInit {
       this.templateService.files.splice(index, 1);
       this.files = this.templateService.files;
       this.latexService.onTextChange('');
-      this._needsSave = true;
+      this.templateService.needsSave = true;
     }
   }
 
@@ -95,20 +90,20 @@ export class FileManagerComponent implements OnInit {
    * Called when the user uploads a file.
    */
   onFileUpload(): void {
-    console.log(this.uploader.queue)
+    console.log(this.uploader.queue);
     this.uploader.onBuildItemForm = (item, form) => {
       form.append('name', this.template.name);
     };
     this.uploader.onCompleteItem = (item: any, response: any, status: any, headers: any) => {
       console.log('ImageUpload:uploaded:', item, status);
       if (status !== 200) {
-        Helper.displayMessage("There was a problem uploading the file!", 0);
+        Helper.displayMessage('There was a problem uploading the file!', 0);
       } else {
-        Helper.displayMessage("File uploaded!");
+        Helper.displayMessage('File uploaded!');
       }
       this.reloadFiles();
       this.showUploadFileDialog = false;
-      this._needsSave = true;
+      this.templateService.needsSave = true;
     };
     this.uploader.uploadAll();
   }
@@ -123,8 +118,8 @@ export class FileManagerComponent implements OnInit {
     });
     this.files = this.templateService.files;
     this.onFileClick(this.templateService.files[this.templateService.files.length - 1]);
-    this._needsSave = true;
     this.showNewFileDialog = false;
+    this.templateService.needsSave = true;
   }
 
   /**
@@ -146,15 +141,14 @@ export class FileManagerComponent implements OnInit {
     // listen to notify events
     this.latexService.textChangeOb.subscribe(text => {
       if (this.selectedFile && this.selectedFile.text !== text) {
-        this._needsSave = true;
         this.selectedFile.text = text;
+        this.templateService.needsSave = true;
       }
     });
     // this.latexService.saveFilesOb.subscribe(docName => {
-    //   this.saveFiles();
+    //   this.onSaveFiles();
     // });
     this.latexService.loadDocOb.subscribe(newDocName => {
-      this.saveFiles();
       this.template = newDocName;
       this.reloadFiles();
     });
@@ -162,7 +156,7 @@ export class FileManagerComponent implements OnInit {
     //   this._needsSave = true;
     // });
 
-    $(document).ready(function(){
+    $(document).ready(function () {
       $('.modal').modal();
     });
   }

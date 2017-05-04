@@ -1,6 +1,6 @@
 <div>
   <div id="file-manager-main-btns">
-    <button class="btn waves-effect btn-primary" (click)="saveFiles()"><i class="material-icons">save</i></button>
+    <button class="btn waves-effect btn-primary" (click)="onSaveFiles()"><i class="material-icons">save</i></button>
     <button class="btn waves-effect red" *ngIf="selectedFile && selectedFile.name"
             data-target="delete-file-dialog"><i class="material-icons">delete</i></button>
   </div>

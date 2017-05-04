@@ -106,10 +106,16 @@ export class FillTemplateComponent implements OnInit {
    */
   genPDF(values?: Object): void {
     if (!values) values = {};
-    this.compiler.replaceAndCompile(this.templateName, this._mainTex.text, values
-      , url => this.safeUri = url);
+    this.compiler.replaceAndCompile(this.templateName, this._mainTex.text, values).subscribe(
+      url => this.safeUri = url,
+      err => Helper.displayMessage(err, 0)
+    );
   }
 
+  /**
+   * Calls TableDecoder methods on the content of an uploaded csv file.
+   * @param event
+   */
   onCSVFileChange(event) {
     this.csvFile = event.srcElement.files[0];
 
@@ -132,12 +138,17 @@ export class FillTemplateComponent implements OnInit {
     reader.readAsText(this.csvFile);
   }
 
+  /**
+   * Starts the compilation process for a series document.
+   */
   onGetSeriesFile(): void {
     if (!this.csvFileJson) {
       return;
     }
-    this.compiler.replaceAndCompileSeries(this.templateName, this._mainTex.text, this.csvFileJson
-      , url => this.safeUri = url);
+    this.compiler.replaceAndCompileSeries(this.templateName, this._mainTex.text, this.csvFileJson).subscribe(
+      url => this.safeUri = url,
+      err => Helper.displayMessage(err, 0)
+    );
   }
 
   ngOnInit() {
