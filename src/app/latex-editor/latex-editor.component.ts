@@ -7,19 +7,19 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {APIService} from "../services/api.service";
-import {LatexService} from "./latex.service";
-import {Helper} from "../../include/helper";
-import {CompilerService} from "../services/compiler.service";
-import {SafeUrl, Title} from "@angular/platform-browser";
+import {APIService} from '../services/api.service';
+import {LatexService} from './latex.service';
+import {Helper} from '../../include/helper';
+import {CompilerService} from '../services/compiler.service';
+import {SafeUrl, Title} from '@angular/platform-browser';
 
 import * as Config from '../../../config';
-import {TemplateI} from "../../../server/interfaces/template";
-import {TemplateService} from "../services/template.service";
-import {Observable} from "rxjs/Observable";
-import {mFile} from "../interfaces/mfile";
+import {TemplateI} from '../../../server/interfaces/template';
+import {TemplateService} from '../services/template.service';
+import {Observable} from 'rxjs/Observable';
+import {mFile} from '../interfaces/mfile';
 
-declare let $: any;
+declare const $: any;
 
 @Component({
   selector: 'app-latex-editor',
@@ -43,9 +43,9 @@ export class LatexEditorComponent implements OnInit {
             , private templateService: TemplateService) {}
 
   onCompilePDF(): void {
-    this.onSavePDF().subscribe(res => {
+    this.templateService.saveTemplate().subscribe(res => {
       this.apiService.getOneDoc(this.currentTemplate.name).subscribe(data => {
-        let mainTex = data.find(f => f.name === 'main.tex');
+        const mainTex = data.find(f => f.name === 'main.tex');
         if (!mainTex) {
           Helper.displayMessage('Could not find main.tex', 0);
           return;
@@ -60,24 +60,24 @@ export class LatexEditorComponent implements OnInit {
     }, err => Helper.displayMessage(err, 0));
   }
 
-  onSavePDF(): Observable<{ template: TemplateI, files: mFile[] }> {
-    return this.templateService.saveTemplate();
-  }
-
   onLoadDoc(): void {
     this.latexService.onLoadDoc(this.currentTemplate);
     this.changeTitle();
     this.showCompiledPDF = false;
+    this.templateService.template = this.currentTemplate;
   }
 
   onTemplateChange(template: TemplateI): void {
-    console.log(this.templateService.template)
-    this.onSavePDF().subscribe(res => {
+    console.log(this.templateService.template);
+    this.templateService.saveTemplate().subscribe(res => {
       this.currentTemplate = template;
-      this.templateService.template = this.currentTemplate;
       this.changeTitle();
       this.onLoadDoc();
-    })
+    });
+  }
+
+  onDescChanged(): void {
+    this.templateService.needsSave = true;
   }
 
   onLoadDocComplete(): void {
@@ -87,10 +87,9 @@ export class LatexEditorComponent implements OnInit {
     });
   }
 
-  onTemplateInfoChange(): void {
-    this.latexService.onTemplateChanged();
-  }
-
+  /**
+   * Helper function to change website title.
+   */
   changeTitle(): void {
     if (this.currentTemplate) {
       this.titleService.setTitle(`${Config.APP_NAME} - edit: ${this.currentTemplate}`);
@@ -131,17 +130,17 @@ export class LatexEditorComponent implements OnInit {
 
       $(window).scroll(() => {
         // make it work in chrome and firefox
-        let scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+        const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
         if (scrollTop > 100) {
           $('.scroll-to-top').fadeIn();
         } else {
           $('.scroll-to-top').fadeOut();
         }
-      })
+      });
       $(`.scroll-to-top`).click(() => {
         $('html, body').animate({scrollTop: 0}, 800);
         return false;
-      })
+      });
     });
 
     this.titleService.setTitle(`${Config.APP_NAME} - edit`);

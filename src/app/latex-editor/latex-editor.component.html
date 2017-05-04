@@ -52,7 +52,7 @@
   <div id="template-options" *ngIf="currentTemplate" class="card" [hidden]="!showMoreOptions">
     <div class="card-content">
       <div class="input-field">
-        <textarea id="description" [(ngModel)]="currentTemplate.desc" (keyup)="onTemplateInfoChange()"
+        <textarea id="description" [(ngModel)]="currentTemplate.desc" (keyup)="onDescChanged()"
               class="materialize-textarea"></textarea>
         <label for="description">Description:</label>
       </div>
