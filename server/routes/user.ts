@@ -1,10 +1,9 @@
-
-import bodyParser = require("body-parser");
+import bodyParser = require('body-parser');
 import express = require('express');
 import mongoosse = require('mongoose');
 import bcrypt = require('bcrypt');
 import jwt = require('jsonwebtoken');
-import {UserModel} from "../models/user.model";
+import {UserModel} from '../models/user.model';
 
 import {AUTH_SECRET} from '../../config';
 
@@ -15,7 +14,6 @@ export = router;
 
 router.post('/api/user/authenticate', authenticate);
 router.post('/api/user/register', register);
-
 
 
 function authenticate(req, res) {
@@ -32,11 +30,12 @@ function authenticate(req, res) {
     }
 
     if (user && bcrypt.compareSync(reqUser.password, user.password)) {
+      let payload = {data: user.id};
       res.send({
         _id: user._id,
         name: user.name,
         role: user.role,
-        token: jwt.sign({ sub: user._id }, AUTH_SECRET),
+        token: jwt.sign(payload, AUTH_SECRET),
       })
     } else {
       res.send({});
