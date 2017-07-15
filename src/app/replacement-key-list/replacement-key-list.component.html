@@ -1,0 +1,5 @@
+<p *ngIf="!replacementKeys || (replacementKeys && replacementKeys.length === 0)">No replacement keys found.</p>
+<p *ngIf="replacementKeys && replacementKeys.length !== 0">Found replacement keys:</p>
+<ul class="collection">
+  <li class="collection-item" *ngFor="let key of replacementKeys">{{key}}</li>
+</ul>
