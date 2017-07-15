@@ -14,6 +14,12 @@ export class TemplateDB {
     })
   }
 
+  static getOne(name: string, callback: (err: any, template: TemplateI) => void) {
+    TemplateModel.findOne({name: name}, (err, template) => {
+      callback(err, template);
+    })
+  }
+
   static save(newTemplate: TemplateI, callback: (err: any, template: TemplateI) => void) {
     let newTemplateModel = new TemplateModel(newTemplate);
     newTemplateModel.save(err => {

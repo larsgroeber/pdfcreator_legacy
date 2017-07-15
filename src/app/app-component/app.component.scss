@@ -8,23 +8,23 @@
 #slide-out {
   background-color: #fff;
   height: 100%;
-}
 
-#slide-out a {
-  text-decoration: none !important;
-}
+  a {
+    text-decoration: none !important;
+  }
 
-#slide-out .active {
-  color: #F8AC00;
+  .active {
+    color: #F8AC00;
+  }
 }
 
 nav {
   background-color: #F8AC00;
-}
 
-nav a {
-  color: white;
-  text-decoration: none !important;
+  a {
+    color: white;
+    text-decoration: none !important;
+  }
 }
 
 .nav-wrapper {
@@ -45,16 +45,16 @@ nav a {
   bottom: 0;
   height: 50px;
   border-top: solid 1px #e0e0e0;
-}
 
-#side-nav-footer p {
-  color: rgba(0,0,0,0.3);
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 48px;
-  padding: 0 32px;
-  margin: 0;
+  p {
+    color: rgba(0,0,0,0.3);
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 48px;
+    padding: 0 32px;
+    margin: 0;
+  }
 }
 
 #author-link {

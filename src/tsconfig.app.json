@@ -17,6 +17,10 @@
   },
   "exclude": [
     "test.ts",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "**/file-manager.component.ts",
+    "**/latex-editor.component.ts",
+    "**/fill-template.component.ts",
+    "setupJest.ts"
   ]
 }

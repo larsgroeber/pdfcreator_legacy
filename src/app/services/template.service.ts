@@ -4,6 +4,7 @@ import {mFile} from "../interfaces/mfile";
 import {APIService} from "./api.service";
 import {Observable} from "rxjs/Observable";
 import {Helper} from "../../include/helper";
+import {Subject} from 'rxjs/Subject';
 
 @Injectable()
 export class TemplateService {
@@ -18,7 +19,10 @@ export class TemplateService {
   }
 
   set template(value: TemplateI) {
-    this._template = value;
+    if (this._template !== value) {
+      this._template = value;
+      this._needsSave = true;
+    }
   }
 
   get files(): mFile[] {
@@ -26,7 +30,10 @@ export class TemplateService {
   }
 
   set files(value: mFile[]) {
-    this._files = value;
+    if (this._files !== value) {
+      this._files = value;
+      this._needsSave = true;
+    }
   }
 
   get needsSave(): boolean {
@@ -35,6 +42,30 @@ export class TemplateService {
 
   set needsSave(value: boolean) {
     this._needsSave = value;
+  }
+
+  // notify subscribers that template changed
+  private filesChanged = new Subject();
+  filesChangedOb = this.filesChanged.asObservable();
+  private onTemplateChange(): void {
+    this.filesChanged.next();
+  }
+
+  getOneDoc(templateName: string): Observable<{ template: TemplateI, files: mFile[] }> {
+    return Observable.create(observer => {
+      if (templateName) {
+        this.api.getOneDoc(templateName).subscribe(res => {
+          observer.next(res);
+          this._needsSave = false;
+          this._template = res.template;
+          this._files = res.files;
+          console.log(`Loaded ${this._template.name}`, this._files);
+          this.onTemplateChange();
+        }, err => observer.error(err))
+      } else {
+        observer.error('No template specified!');
+      }
+    })
   }
 
   saveTemplate(): Observable<{ template: TemplateI, files: mFile[] }> {

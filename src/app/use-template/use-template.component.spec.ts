@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LatexEditorComponent } from './latex-editor.component';
+import { UseTemplateComponent } from './use-template.component';
 
-describe('LatexEditorComponent', () => {
-  let component: LatexEditorComponent;
-  let fixture: ComponentFixture<LatexEditorComponent>;
+describe('UseTemplateComponent', () => {
+  let component: UseTemplateComponent;
+  let fixture: ComponentFixture<UseTemplateComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ LatexEditorComponent ]
+      declarations: [ UseTemplateComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LatexEditorComponent);
+    fixture = TestBed.createComponent(UseTemplateComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -7,16 +7,17 @@
 import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {APIService} from "../services/api.service";
 import {Helper} from "../../include/helper";
-import {LatexService} from "../latex-editor/latex.service";
+import {LatexService} from "../latex-editor-old/latex.service";
 import {TemplateI} from "../../../server/interfaces/template";
 import {showWarningOnce} from "tslint/lib/error";
+import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 
 declare let $: any;
 
 @Component({
   selector: 'app-template-select',
   templateUrl: './template-select.component.html',
-  styleUrls: ['./template-select.component.css']
+  styleUrls: ['./template-select.component.scss']
 })
 export class TemplateSelectComponent implements OnInit, AfterViewInit {
   public templates: TemplateI[];
@@ -25,16 +26,23 @@ export class TemplateSelectComponent implements OnInit, AfterViewInit {
 
   @ViewChild('select') select: ElementRef;
 
-  @Output() templateSelected: EventEmitter<TemplateI> = new EventEmitter<TemplateI>();
-
   @Input() showOnlyActive: boolean = false;
 
-  constructor(private latex: APIService, private notify: LatexService) { }
+  constructor(private latex: APIService
+            , private notify: LatexService
+            , private router: Router) {
+  }
 
   onSelect(templateName: string): void {
     if (templateName) {
-      let selectedTemplate: TemplateI = this.templates.find(t => t.name === templateName);
-      this.templateSelected.emit(selectedTemplate);
+      let url = '';
+      // TODO: Figure out how to handle this better!
+      if (this.router.url.split('/').indexOf('edit') != -1) {
+        url = `edit`;
+      } else if (this.router.url.split('/').indexOf('use') != -1) {
+        url = `use`;
+      }
+      this.router.navigate([url, templateName])
     }
   }
 

@@ -33,9 +33,9 @@ export class APIService {
       .catch(APIService.handleError);
   }
 
-  getOneDoc(docName: string): Observable<mFile[]> {
+  getOneDoc(docName: string): Observable<{ template: TemplateI, files: mFile[] }> {
     return this.http.post(URL + 'api/template/get', { name: docName } )
-      .map(res => res.json().files)
+      .map(res => res.json())
       .catch(APIService.handleError);
   }
 

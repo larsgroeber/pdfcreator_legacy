@@ -165,30 +165,33 @@ function get_all(req, res) {
 function getOne(req, res) {
   let name = req.body.name;
   if (name) {
-    fs.readdir(Config.DATA_PATH + name, (err, files) => {
+    TemplateDB.getOne(name, (err, template) => {
       if (!handleErr(err, res)) return;
+      fs.readdir(Config.DATA_PATH + name, (err, files) => {
+        if (!handleErr(err, res)) return;
 
-      let docFiles: mFile[] = [];
-      for (let f of files) {
-        try {
-          let m = mime.lookup(f);
-          if (m == 'image/png' || m == 'image/jpeg') {
-            docFiles.push({name: f, text: 'Picture, not implemented'});
-            continue;
+        let docFiles: mFile[] = [];
+        for (let f of files) {
+          try {
+            let m = mime.lookup(f);
+            if (m == 'image/png' || m == 'image/jpeg') {
+              docFiles.push({name: f, text: 'Picture, not implemented'});
+              continue;
+            }
+            if (m == 'application/pdf') {
+              docFiles.push({name: f, text: 'PDF, not implemented'});
+              continue;
+            }
+            docFiles.push({name: f, text: fs.readFileSync(Config.DATA_PATH + name + '/' + f, 'utf8')});
+          } catch (err) {
+            console.error(err);
+            res.status(500).send(err);
+            return;
           }
-          if (m == 'application/pdf') {
-            docFiles.push({name: f, text: 'PDF, not implemented'});
-            continue;
-          }
-          docFiles.push({name: f, text: fs.readFileSync(Config.DATA_PATH + name + '/' + f, 'utf8')});
-        } catch (err) {
-          console.error(err);
-          res.status(500).send(err);
-          return;
         }
-      }
-      res.send({files: docFiles});
-    });
+        res.send({template: template, files: docFiles});
+      });
+    })
   } else {
     console.log('Bad Request.');
     res.sendStatus(400);
