@@ -4,13 +4,12 @@
  * @author Lars Gröber
  */
 
-import {AfterViewInit, Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {APIService} from "../services/api.service";
-import {Helper} from "../../include/helper";
-import {LatexService} from "../latex-editor-old/latex.service";
-import {TemplateI} from "../../../server/interfaces/template";
-import {showWarningOnce} from "tslint/lib/error";
-import {ActivatedRoute, ParamMap, Router} from '@angular/router';
+import {AfterViewInit, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {APIService} from '../services/api.service';
+import {Helper} from '../../include/helper';
+import {TemplateI} from '../../../server/interfaces/template';
+import {ActivatedRoute, NavigationStart, ParamMap, Router} from '@angular/router';
+import {Observable} from 'rxjs/Observable';
 
 declare let $: any;
 
@@ -24,44 +23,74 @@ export class TemplateSelectComponent implements OnInit, AfterViewInit {
   public templatesActive: TemplateI[];
   public templatesInactive: TemplateI[];
 
+  private url: string;
+
   @ViewChild('select') select: ElementRef;
 
-  @Input() showOnlyActive: boolean = false;
+  showOnlyActive: boolean = false;
 
-  constructor(private latex: APIService
-            , private notify: LatexService
-            , private router: Router) {
+  constructor(private apiService: APIService
+    , private router: Router
+    , private route: ActivatedRoute) {
+    this.router.events
+      .debounce(() => Observable.timer(500))
+      .filter(e => e instanceof NavigationStart)
+      .subscribe(val => {
+        this.checkTemplateName();
+      })
   }
 
   onSelect(templateName: string): void {
     if (templateName) {
-      let url = '';
-      // TODO: Figure out how to handle this better!
-      if (this.router.url.split('/').indexOf('edit') != -1) {
-        url = `edit`;
-      } else if (this.router.url.split('/').indexOf('use') != -1) {
-        url = `use`;
-      }
-      this.router.navigate([url, templateName])
+      this.router.navigate([this.url, templateName])
     }
   }
 
-  reloadTemplates(selectedName: string): void {
-    this.latex.getAllDocs().subscribe(docs => {
+  reloadTemplates(callback): void {
+    this.apiService.getAllDocs().subscribe(docs => {
         this.templates = docs;
         this.templatesActive = this.templates.filter(t => t.active);
         this.templatesInactive = this.templates.filter(t => !t.active);
-        $(document).ready(() => {
-          $('select').val(selectedName);
-          $('select').material_select();
-        });
+        if (callback) callback();
       },
       err => Helper.displayMessage(err));
   }
 
+  selectTemplate(name: string): void {
+    $(document).ready(() => {
+      $('select').val(name);
+      $('select').material_select();
+    });
+  }
+
+  private checkTemplateName(): void {
+    let name: string;
+    if (this.route.firstChild) {
+      this.route.firstChild.params.subscribe((params: ParamMap) => {
+        name = params['name'] ? params['name'] : '';
+
+        if (this.templates && !this.templates.find(t => t.name === name)) {
+          this.reloadTemplates(() => this.selectTemplate(name));
+        } else {
+          this.selectTemplate(name);
+        }
+      })
+    } else {
+      this.reloadTemplates(() => this.selectTemplate(''));
+    }
+  }
+
   ngOnInit() {
-    this.notify.loadTemplatesOb.subscribe(selected => this.reloadTemplates(selected));
-    this.reloadTemplates('');
+    if (this.router.url.split('/').indexOf('edit') != -1) {
+      this.url = `edit`;
+    } else if (this.router.url.split('/').indexOf('use') != -1) {
+      this.url = `use`;
+      this.showOnlyActive = true;
+    }
+
+    this.reloadTemplates(() => {
+      this.checkTemplateName();
+    });
   }
 
   ngAfterViewInit(): void {

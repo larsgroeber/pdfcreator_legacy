@@ -1,6 +1,6 @@
 <div *ngIf="files">
   <div id="file-manager-main-btns">
-    <button class="btn waves-effect btn-primary" (click)="onSaveFiles()"><i class="material-icons">save</i></button>
+    <button class="btn waves-effect btn-primary" (click)="onSave()"><i class="material-icons">save</i></button>
     <button class="btn waves-effect red" *ngIf="selectedFile && selectedFile.name"
             data-target="delete-file-dialog"><i class="material-icons">delete</i></button>
   </div>
@@ -30,7 +30,7 @@
       Are you sure you want to delete the file {{selectedFile.name}}?
     </div>
     <div class="modal-footer">
-      <button class="btn-flat modal-close left modal-action" (click)="deleteFile()">Yes</button>
+      <button class="btn-flat modal-close left modal-action" (click)="onDeleteFile()">Yes</button>
       <button class="btn-flat left modal-close modal-action">No</button>
     </div>
   </div>
@@ -39,12 +39,12 @@
     <div class="modal-content">
       <p>Add an empty file to this template:</p>
       <div class="input-field">
-        <input id="new-file-name" [(ngModel)]="fileName" type="text" name="fileName">
+        <input id="new-file-name" [(ngModel)]="newFileName" type="text" name="fileName">
         <label for="new-file-name">New file</label>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-flat left modal-close" (click)="onNewFileSave()">Save</button>
+      <button class="btn-flat left modal-close" (click)="onNewFile(newFileName)">Save</button>
     </div>
   </div>
 

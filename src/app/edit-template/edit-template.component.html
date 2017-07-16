@@ -18,7 +18,7 @@
 <div id="template-options" *ngIf="template" class="card" [hidden]="!showMoreOptions">
   <div class="card-content">
     <div class="input-field">
-        <textarea id="description" [(ngModel)]="template.desc" (keyup)="onDescChanged()"
+        <textarea id="description" [(ngModel)]="template.desc" (keyup)="onTemplateInfoChange()"
                   class="materialize-textarea"></textarea>
       <label for="description">Description:</label>
     </div>
@@ -41,7 +41,7 @@
     <p class="dialog-header">Are you sure you want to delete the template {{template}}?</p>
   </div>
   <div class="modal-footer">
-    <button class="btn-flat modal-close left modal-action" (click)="onDeleteDoc()">Yes</button>
+    <button class="btn-flat modal-close left modal-action" (click)="onDelete()">Yes</button>
     <button class="btn-flat left modal-close modal-action">No</button>
   </div>
 </div>
@@ -49,11 +49,11 @@
   <div class="modal-content">
     <p class="dialog-header">Add an empty template:</p>
     <div class="input-field">
-      <input id="newName" type="text" class="form-control" [(ngModel)]="newDocName">
+      <input id="newName" type="text" class="form-control" [(ngModel)]="newTemplateName">
       <label for="newName">Name des Templates</label>
     </div>
   </div>
   <div class="modal-footer">
-    <button class="btn-flat modal-close left modal-action" (click)="onCreateDoc()">Create</button>
+    <button class="btn-flat modal-close left modal-action" (click)="onCreate()">Create</button>
   </div>
 </div>

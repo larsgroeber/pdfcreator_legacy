@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {TemplateI} from '../../../server/interfaces/template';
-import {ActivatedRoute, ParamMap } from '@angular/router';
+import {ActivatedRoute, ParamMap, Router} from '@angular/router';
 import {TemplateService} from '../services/template.service';
 import {mFile} from '../interfaces/mfile';
+import {Helper} from '../../include/helper';
+import {CompilerService} from '../services/compiler.service';
+import {SafeUrl} from '@angular/platform-browser';
 
 @Component({
   selector: 'app-edit-template',
@@ -14,23 +17,62 @@ export class EditTemplateComponent implements OnInit {
   public template: TemplateI;
   public files: mFile[];
 
+  public newTemplateName: string;
+
+  public replacementKeys: string[];
+  public safeURL: SafeUrl;
+
   public showCompiledPDF = false;
   public showMoreOptions = false;
 
   constructor(private route: ActivatedRoute
-            , private templateService: TemplateService) { }
+    , private router: Router
+    , private templateService: TemplateService
+    , private compilerService: CompilerService) {
+  }
+
+  onCompilePDF(): void {
+    const mainTex = this.files.find(f => f.name === 'main.tex');
+    if (!mainTex) {
+      Helper.displayMessage('Could not find main.tex', 1);
+      return;
+    }
+    this.showCompiledPDF = true;
+    this.replacementKeys = this.compilerService.getKeys(mainTex.text);
+    this.compilerService.compileLatex(this.template.name, mainTex.text).subscribe(
+      url => this.safeURL = url,
+      err => Helper.displayMessage(err, 1)
+    );
+  }
 
   onTemplateInfoChange(): void {
-    this.templateService.template = this.template;
+    this.templateService.needsSave = true;
+  }
+
+  onCreate(): void {
+    this.templateService.createTemplate(this.newTemplateName).subscribe(
+      res => this.router.navigate(['edit', this.newTemplateName]),
+      err => Helper.displayMessage(err, 0)
+    )
+  }
+
+  // TODO: templateSelect does not work as intended
+  onDelete(): void {
+    this.templateService.deleteTemplate().subscribe(
+      res => {
+        this.router.navigate(['edit']);
+      }
+    )
   }
 
   ngOnInit() {
     this.route.paramMap.switchMap((params: ParamMap) => {
       return this.templateService.getOneDoc(params.get('name'))
     })
-    .subscribe((res: { template: TemplateI, files: mFile[]}) => {
-      this.template = res.template;
-      this.files = res.files;
+      .subscribe(() => {
+        this.template = this.templateService.template;
+        this.files = this.templateService.files;
+        this.showCompiledPDF = false;
     })
   }
 
