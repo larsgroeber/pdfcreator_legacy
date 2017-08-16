@@ -164,6 +164,7 @@ function get_all(req, res) {
 // Expects a 'name' parameter in body.
 function getOne(req, res) {
   let name = req.body.name;
+  console.log(name)
   if (name) {
     TemplateDB.getOne(name, (err, template) => {
       if (!handleErr(err, res)) return;

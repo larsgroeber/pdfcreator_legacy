@@ -7,5 +7,21 @@
     </optgroup>
   </select>
   <label>Template:</label>
+  <button class="btn-floating waves-effect waves-light btn-space" id="new-doc-btn" data-target="new-doc-dialog">
+    <i class="material-icons">add</i>
+  </button>
 </div>
 <router-outlet></router-outlet>
+
+<div class="modal" id="new-doc-dialog">
+  <div class="modal-content">
+    <p class="dialog-header">Add an empty template:</p>
+    <div class="input-field">
+      <input id="newName" type="text" class="form-control" [(ngModel)]="newTemplateName">
+      <label for="newName">Name des Templates</label>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button class="btn-flat modal-close left modal-action" (click)="onCreate()">Create</button>
+  </div>
+</div>

@@ -17,8 +17,6 @@ export class EditTemplateComponent implements OnInit {
   public template: TemplateI;
   public files: mFile[];
 
-  public newTemplateName: string;
-
   public replacementKeys: string[];
   public safeURL: SafeUrl;
 
@@ -49,13 +47,6 @@ export class EditTemplateComponent implements OnInit {
     this.templateService.needsSave = true;
   }
 
-  onCreate(): void {
-    this.templateService.createTemplate(this.newTemplateName).subscribe(
-      res => this.router.navigate(['edit', this.newTemplateName]),
-      err => Helper.displayMessage(err, 0)
-    )
-  }
-
   // TODO: templateSelect does not work as intended
   onDelete(): void {
     this.templateService.deleteTemplate().subscribe(
@@ -67,7 +58,10 @@ export class EditTemplateComponent implements OnInit {
 
   ngOnInit() {
     this.route.paramMap.switchMap((params: ParamMap) => {
-      return this.templateService.getOneDoc(params.get('name'))
+      const name = params.get('name');
+      if (name) {
+        return this.templateService.getOneDoc(name)
+      }
     })
       .subscribe(() => {
         this.template = this.templateService.template;

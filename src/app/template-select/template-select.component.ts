@@ -10,6 +10,7 @@ import {Helper} from '../../include/helper';
 import {TemplateI} from '../../../server/interfaces/template';
 import {ActivatedRoute, NavigationStart, ParamMap, Router} from '@angular/router';
 import {Observable} from 'rxjs/Observable';
+import {TemplateService} from "../services/template.service";
 
 declare let $: any;
 
@@ -22,19 +23,20 @@ export class TemplateSelectComponent implements OnInit, AfterViewInit {
   public templates: TemplateI[];
   public templatesActive: TemplateI[];
   public templatesInactive: TemplateI[];
+  newTemplateName: string;
 
   private url: string;
 
   @ViewChild('select') select: ElementRef;
 
-  showOnlyActive: boolean = false;
+  showOnlyActive = false;
 
   constructor(private apiService: APIService
     , private router: Router
-    , private route: ActivatedRoute) {
+    , private route: ActivatedRoute
+    , private templateService: TemplateService) {
     this.router.events
       .debounce(() => Observable.timer(500))
-      .filter(e => e instanceof NavigationStart)
       .subscribe(val => {
         this.checkTemplateName();
       })
@@ -44,6 +46,13 @@ export class TemplateSelectComponent implements OnInit, AfterViewInit {
     if (templateName) {
       this.router.navigate([this.url, templateName])
     }
+  }
+
+  onCreate(): void {
+    this.templateService.createTemplate(this.newTemplateName).subscribe(
+      res => this.router.navigate(['edit', this.newTemplateName]),
+      err => Helper.displayMessage(err, 0)
+    )
   }
 
   reloadTemplates(callback): void {
@@ -81,9 +90,9 @@ export class TemplateSelectComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
-    if (this.router.url.split('/').indexOf('edit') != -1) {
+    if (this.router.url.split('/').indexOf('edit') !== -1) {
       this.url = `edit`;
-    } else if (this.router.url.split('/').indexOf('use') != -1) {
+    } else if (this.router.url.split('/').indexOf('use') !== -1) {
       this.url = `use`;
       this.showOnlyActive = true;
     }

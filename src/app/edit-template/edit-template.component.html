@@ -8,17 +8,19 @@
 </div>
 
 <div id="template-buttons">
-  <button class="btn btn-raised btn-space" data-target="new-doc-dialog">New</button>
-  <button class="btn btn-raised btn-space" (click)="showMoreOptions = !showMoreOptions" *ngIf="template">
-    <i class="material-icons">more_horiz</i></button>
-  <button class="btn btn-raised btn-primary right btn-space" *ngIf="template"
-          (click)="onCompilePDF()">Compile PDF</button>
+  <button class="btn btn-raised btn-primary btn-space" (click)="showMoreOptions = !showMoreOptions" *ngIf="template">
+    <i class="material-icons">more_horiz</i>
+  </button>
+  <button class="btn btn-raised btn-primary btn-space" *ngIf="template"
+          (click)="onCompilePDF()">
+    Compile PDF
+  </button>
 </div>
 
 <div id="template-options" *ngIf="template" class="card" [hidden]="!showMoreOptions">
   <div class="card-content">
     <div class="input-field">
-        <textarea id="description" [(ngModel)]="template.desc" (keyup)="onTemplateInfoChange()"
+      <textarea id="description" [(ngModel)]="template.desc" (keyup)="onTemplateInfoChange()"
                   class="materialize-textarea"></textarea>
       <label for="description">Description:</label>
     </div>
@@ -28,32 +30,20 @@
         <input (change)="onTemplateInfoChange()" [(ngModel)]="template.active" type="checkbox">
         <span class="lever"></span>
       </label>
+      <button class="btn btn-raised red right" data-target="delete-doc-dialog">Delete</button>
     </div>
-    <button class="btn btn-raised red right" data-target="delete-doc-dialog">Delete</button>
   </div>
 </div>
 
 <app-latex-editor *ngIf="template"></app-latex-editor>
 
 <!-- MODALS -->
-<div class="modal" id="delete-doc-dialog">
+<div class="modal" id="delete-doc-dialog" *ngIf="template">
   <div class="modal-content">
-    <p class="dialog-header">Are you sure you want to delete the template {{template}}?</p>
+    <p class="dialog-header">Are you sure you want to delete the template {{template.name}}?</p>
   </div>
   <div class="modal-footer">
     <button class="btn-flat modal-close left modal-action" (click)="onDelete()">Yes</button>
     <button class="btn-flat left modal-close modal-action">No</button>
-  </div>
-</div>
-<div class="modal" id="new-doc-dialog">
-  <div class="modal-content">
-    <p class="dialog-header">Add an empty template:</p>
-    <div class="input-field">
-      <input id="newName" type="text" class="form-control" [(ngModel)]="newTemplateName">
-      <label for="newName">Name des Templates</label>
-    </div>
-  </div>
-  <div class="modal-footer">
-    <button class="btn-flat modal-close left modal-action" (click)="onCreate()">Create</button>
   </div>
 </div>

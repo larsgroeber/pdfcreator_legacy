@@ -99,6 +99,7 @@ export class APIService {
   // see angular 2 guides
   public static handleError(error: Response | any) {
     let errMsg: string;
+    console.error(error)
     if (error instanceof Response) {
       const body = error.json() || '';
       const err = body.error || JSON.stringify(body);
@@ -106,7 +107,7 @@ export class APIService {
     } else {
       errMsg = error.message ? error.message : error.toString();
     }
-    console.error(errMsg);
-    return Observable.throw(errMsg);
+    console.error(error.statusText);
+    return Observable.throw(error.statusText);
   }
 }

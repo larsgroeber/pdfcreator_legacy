@@ -6,10 +6,8 @@
  * @author Lars Gröber
  */
 
-import {AfterViewInit, Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {LatexService} from "../latex-editor-old/latex.service";
+import {Component, Input, OnInit} from "@angular/core";
 import {TemplateService} from '../services/template.service';
-import {file} from 'babel-types';
 import {mFile} from '../interfaces/mfile';
 
 declare let $: any;
