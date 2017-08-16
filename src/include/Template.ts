@@ -7,7 +7,7 @@
  */
 
 import * as _ from 'lodash';
-import {Helper} from "./helper";
+import {Helper} from './helper';
 
 export class Template {
   static leftDel = '<<';
@@ -63,7 +63,7 @@ export class Template {
       const re = new RegExp('\\$\\w*', 'g');
       let newStatement = statement;
       _.each(statement.match(re), (match: string) => {
-        let key = match.slice(1);
+        const key = match.slice(1);
         if (values[key]) {
           newStatement = statement.replace(re, values[key]);
         } else {
@@ -157,9 +157,10 @@ export class Template {
     // "correct" regex would be (?<=ldel)(.*?)(?=rdel) using lookaheads and lookbehinds
     // but js does not support lookbehinds. So we have to remove the delimiters manually.
     const re = new RegExp(`${leftDel}(.*?)${rightDel}`, 'g');
-    return _.each(this._templateText.match(re), (e, i, a) => {
-      const re = new RegExp(`${rightDel}|${leftDel}`, 'g');
-      a[i] = e.replace(re, '').trim();
+    const a = this._templateText.match(re);
+    return _.each(a, (e, i) => {
+      const re2 = new RegExp(`${rightDel}|${leftDel}`, 'g');
+      a[i] = e.replace(re2, '').trim();
     }) || [];
   }
 
@@ -183,6 +184,6 @@ export class Template {
    * @return {string}
    */
   private static escapeRegex(str: string): string {
-    return (str+'').replace(/[.?*+^$[\]\\(){}|-]/g, "\\$&");
+    return (str + '').replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
   }
 }
