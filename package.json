@@ -10,7 +10,9 @@
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "private": true,
   "dependencies": {
@@ -49,7 +51,8 @@
     "pdf-merge": "^0.1.0",
     "rasterizehtml": "^1.2.4",
     "rxjs": "^5.4.0",
-    "zone.js": "^0.8.12"
+    "zone.js": "^0.8.12",
+    "snyk": "^1.41.1"
   },
   "devDependencies": {
     "@angular/cli": "1.1.1",
@@ -72,5 +75,6 @@
     "ts-node": "~3.0.6",
     "tslint": "~5.4.3",
     "typescript": "^2.3.4"
-  }
+  },
+  "snyk": true
 }
